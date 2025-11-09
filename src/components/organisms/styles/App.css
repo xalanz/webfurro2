@@ -56,12 +56,12 @@
         }
 
         /* Hero Section */
-        .hero {
+    .hero {
             background: linear-gradient(rgba(107, 163, 255, 0.7), rgba(137, 207, 240, 0.7)),
                         url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 600"><rect fill="%23b3d9ff" width="1200" height="600"/><circle fill="%23c8e4ff" cx="200" cy="150" r="80"/><circle fill="%23c8e4ff" cx="600" cy="400" r="100"/><circle fill="%23c8e4ff" cx="1000" cy="200" r="90"/></svg>');
             background-size: cover;
             background-position: center;
-            height: 600px;
+            height: 520px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -111,8 +111,9 @@
 
         /* Products Section */
         .productos {
-            padding: 5rem 2rem;
-            background: #f0f8ff;
+            padding: 3rem 2rem;
+            /* slightly stronger tint so the section is visible against the hero */
+            background: #e6f7ff;
         }
 
         .container {

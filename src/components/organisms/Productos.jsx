@@ -1,12 +1,12 @@
 import React from 'react';
 
 const defaultItems = [
-    { emoji: '', title: 'Tortas Personalizadas', desc: 'Diseños únicos para tus celebraciones especiales.',  },
-    { emoji: '', title: 'Cupcakes Gourmet', desc: 'Pequeñas delicias con sabores intensos.', },
-    { emoji: '', title: 'Galletas Artesanales', desc: 'Crocantes por fuera, suaves por dentro.',  },
-    { emoji: '', title: 'Pastelería Francesa', desc: 'Croissants, macarons y éclairs.',  },
-    { emoji: '', title: 'Donas Rellenas', desc: 'Esponjosas y con rellenos cremosos.',  },
-    { emoji: '', title: 'Donas Rellenas', desc: 'Esponjosas y con rellenos cremosos.', },
+    {  title: 'Tortas Personalizadas', desc: 'Diseños únicos para tus celebraciones especiales.',  },
+    {  title: 'Cupcakes Gourmet', desc: 'Pequeñas delicias con sabores intensos.', },
+    {  title: 'Galletas Artesanales', desc: 'Crocantes por fuera, suaves por dentro.',  },
+    { title: 'Pastelería Francesa', desc: 'Croissants, macarons y éclairs.',  },
+    {  title: 'Donas Rellenas', desc: 'Esponjosas y con rellenos cremosos.',  },
+    {  title: 'Donas Rellenas', desc: 'Esponjosas y con rellenos cremosos.', },
 ];
 
 const Productos = ({ items = defaultItems }) => (

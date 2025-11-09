@@ -8,9 +8,11 @@ return (
     <div className="logo">🧁 DulceLobito</div>
         <ul className="nav-list">
         <li><Link to="/login">Iniciar sesión</Link></li>
-        <li><a href="">Productos</a></li>
-        <li><a href="#nosotros">Nosotros</a></li>
-        <li><a href="#contacto">Contacto</a></li>
+        <li><Link to="/Productos">Productos</Link></li>
+        <li><Link to="/InformacioNostros">Nosotros</Link></li>
+        <li><Link to="/Contacto">Contacto</Link></li>
+        
+    
     </ul>
     </nav>
 </header>

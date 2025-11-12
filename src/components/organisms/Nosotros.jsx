@@ -82,8 +82,8 @@ function Nosotros() {
                     </p>
                     <span className="badge bg-success mb-3">Viva el Lol</span>
                     <p className="card-text text-start">
-                      Licenciada en Ciencias Ambientales, María coordina nuestras iniciativas 
-                      de sostenibilidad y mantiene alianzas con agricultores locales.
+                      aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+                      aaaaaaaaaaaaaaaaaaaaaaaa
                     </p>
                   </div>
                 </div>

@@ -55,7 +55,7 @@
             text-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
 
-        /* Hero Section */
+        /* Hero Section */ 
     .hero {
             background: linear-gradient(rgba(107, 163, 255, 0.7), rgba(137, 207, 240, 0.7)),
                         url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 600"><rect fill="%23b3d9ff" width="1200" height="600"/><circle fill="%23c8e4ff" cx="200" cy="150" r="80"/><circle fill="%23c8e4ff" cx="600" cy="400" r="100"/><circle fill="%23c8e4ff" cx="1000" cy="200" r="90"/></svg>');
@@ -85,6 +85,8 @@
             margin-bottom: 1rem;
             text-shadow: 3px 3px 6px rgba(0,0,0,0.3);
         }
+
+
 
         .hero p {
             font-size: 1.3rem;

@@ -7,8 +7,16 @@
 }
 
 .backgroundimage {
-  background: linear-gradient(to bottom, #f0f9f4 0%, #ffffff 100%);
+  /* use a single background source served from public/ for reliability */
+  background-image: url('../img/a.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
   min-height: 100vh;
+  display: block;
+  width: 100%;
+  /* ensure background extends below content (including shadows) */
+  padding-bottom: 2.5rem;
 }
 
 /* ===== TEAM SECTION ===== */
@@ -34,7 +42,7 @@
 .team-photo-placeholder {
   width: 100px;
   height: 100px;
-  background: linear-gradient(135deg, #7fc97f 0%, #5cb85c 100%);
+  background: linear-gradient(135deg, #89cff0 0%, #89cff0 100%);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -74,7 +82,7 @@
 /* ===== IMPACT SECTION ===== */
 
 .impact-section {
-  background: linear-gradient(135deg, #f8fff8 0%, #e8f5e9 100%) !important;
+  background: linear-gradient(135deg, #89cff0 0%, #6ba3ff 100%) !important;
   border: 2px solid rgba(34, 139, 34, 0.1);
 }
 
@@ -100,9 +108,9 @@
 /* ===== MAPA SECTION ===== */
 
 .mapa-contenedor {
-  margin: 4rem auto;
+  margin: 2rem auto 0; /* remove bottom spacing so next section sits immediately below */
   text-align: center;
-  padding: 2rem;
+  padding: 1.5rem;
   background: white;
   border-radius: 20px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
@@ -205,13 +213,21 @@ animation: fadeInUp 0.6s ease-out;
 /* ===== UTILITIES ===== */
 
 .text-success {
-color: #28a745 !important;
+color: #6ba3ff !important;
 }
 
 .bg-success {
-background-color: #28a745 !important;
+background-color: #6ba3ff !important;
 }
 
 .fw-bold {
 font-weight: 700 !important;
+}
+
+
+/* (backgroundimage rules consolidated above) */
+
+/* make sure the next section sits flush against the map block */
+.contacto {
+  margin-top: 0;
 }

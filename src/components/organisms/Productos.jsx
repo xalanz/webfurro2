@@ -8,7 +8,7 @@ const defaultItems = [
     { title: 'Pastelería Francesa', desc: 'Croissants, macarons y éclairs.', image: CamaronImg },
     { title: 'Donas Rellenas', desc: 'Esponjosas y con rellenos cremosos.', image: CamaronImg },
 ];
-
+// Cada objeto en defaultItems representa un producto con su título, descripción e imagen.
 const Productos = ({ items = defaultItems }) => (
     <section className="productos" id="productos">
         <div className="container">

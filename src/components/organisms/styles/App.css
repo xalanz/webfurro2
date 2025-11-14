@@ -146,10 +146,11 @@
             transform: translateY(-10px);
             box-shadow: 0 10px 30px rgba(107, 163, 255, 0.25);
         }
+        
 
         .producto-img {
             width: 70%;
-            height: 150px;
+            height: 140px;
             background: linear-gradient(135deg, #c8e4ff 0%, #b3d9ff 100%);
             display: inline-flex;
             align-items: center;

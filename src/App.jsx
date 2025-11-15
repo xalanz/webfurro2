@@ -4,7 +4,7 @@ import Login from './components/page/Login'
 import Registro from './components/page/Registro'
 import { Link } from 'react-router-dom'
 import InformacioNostros from './components/page/InformacioNostros'
-
+import Carito from './components/page/Carito'
 
 
 
@@ -16,8 +16,10 @@ function App() {
       <Link to="/login" ></Link>
       <Link to="/registro"></Link>
       <Link to="/InformacioNostros"></Link>
+      <Link to="/Productos"></Link>
       <Routes>
         <Route path='/Home' element={<Home/>} />
+        <Route path='/Productos' element={<Carito/>} />
         <Route path='/login' element={<Login/>} />
         <Route path='/registro' element={<Registro/>} />
         <Route path='/InformacioNostros' element={<InformacioNostros/>} />

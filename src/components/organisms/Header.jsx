@@ -7,6 +7,7 @@ return (
     <nav className="nav container">
     <div className="logo">🧁 DulceLobito</div>
         <ul className="nav-list">
+        <li><Link to="/Home">inicio</Link></li>
         <li><Link to="/login">Iniciar sesión</Link></li>
         <li><Link to="/Productos">Productos</Link></li>
         <li><Link to="/InformacioNostros">Nosotros</Link></li>

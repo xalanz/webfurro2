@@ -18,6 +18,7 @@ function App() {
       <Link to="/InformacioNostros"></Link>
       <Link to="/Productos"></Link>
       <Routes>
+        <Route path='/' element={<Home/>} />
         <Route path='/Home' element={<Home/>} />
         <Route path='/Productos' element={<Carito/>} />
         <Route path='/login' element={<Login/>} />

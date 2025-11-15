@@ -7,7 +7,7 @@ return (
     <div className="about-content container">
     <h2>Sobre Nosotros</h2>
     <p>
-        En <strong>Dulce Encanto</strong>, cada producto es elaborado con dedicación y pasión.
+        En <strong>DulceLobito</strong>, cada producto es elaborado con dedicación y pasión.
     nos especializamos en crear experiencias dulces inolvidables para nuestros clientes.
     </p>
     

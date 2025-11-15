@@ -12,7 +12,6 @@ function App() {
 
   return (
     <BrowserRouter>
-
       <Link to="/Home"></Link>
       <Link to="/login" ></Link>
       <Link to="/registro"></Link>

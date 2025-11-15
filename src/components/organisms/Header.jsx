@@ -11,7 +11,7 @@ return (
         <li><Link to="/login">Iniciar sesión</Link></li>
         <li><Link to="/Productos">Productos</Link></li>
         <li><Link to="/InformacioNostros">Nosotros</Link></li>
-        <li><Link to="/Contacto">Contacto</Link></li>
+        
         
     
     </ul>

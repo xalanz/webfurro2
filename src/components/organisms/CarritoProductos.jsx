@@ -41,8 +41,8 @@ const productos = [
   },
   { 
     id: 'CUPC001', 
-    nombre: 'Cupcakes Decorados', 
-    categoria: 'Cupcakes', 
+    nombre: 'muffins', 
+    categoria: 'muffins', 
     precio: 18000, 
     imagen: imagenPlaceholder,
     stock: true, 
@@ -107,7 +107,7 @@ const productos = [
   }
 ];
 
-const categorias = ['Todas', 'Pasteles', 'Cupcakes', 'Galletas', 'Postres', 'Donuts'];function TiendaHuertoHogar() {
+const categorias = ['Todas', 'Pasteles', 'muffins', 'Galletas', 'Postres', 'Donuts'];function TiendaHuertoHogar() {
   const [categoriaActiva, setCategoriaActiva] = useState('Todas');
   const [carrito, setCarrito] = useState([]);
   const [mostrarCarrito, setMostrarCarrito] = useState(false);

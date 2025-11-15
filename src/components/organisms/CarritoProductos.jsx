@@ -207,7 +207,7 @@ const categorias = ['Todas', 'Pasteles', 'muffins', 'Galletas', 'Postres', 'Donu
     <div className="tienda-contenedor">
       
       <div className="banner">
-        <h1> ''</h1>
+        <h1>  oa </h1>
         <div className='HOlas'>
           <div className="banner-contenido">
             <h3 className="logo-text"> </h3>

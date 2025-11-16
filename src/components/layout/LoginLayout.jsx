@@ -45,9 +45,7 @@ export default function LoginLayout() {
 						<label htmlFor="remember" className="login-checkbox-label">Recordarme</label>
 					</div>
 
-					<div className="login-forgot">
-						<a href="#" className="login-forgot-link">¿Olvidaste tu contraseña?</a>
-					</div>
+					
 
 					<button type="submit" className="login-button">Iniciar Sesión</button>
                     

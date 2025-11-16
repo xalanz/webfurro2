@@ -4,8 +4,10 @@ import Login from './components/page/Login'
 import Registro from './components/page/Registro'
 import Tienda from './components/page/Tienda'
 import { Link } from 'react-router-dom'
-import InformacioNostros from './components/page/InformacioNostros'
 
+import { Link } from 'react-router-dom'
+import InformacioNostros from './components/page/InformacioNostros'
+import Carito from './components/page/Carito'
 
 
 

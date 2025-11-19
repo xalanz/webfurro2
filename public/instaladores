@@ -1,0 +1,11 @@
+npm create vite
+
+(y, nombre-proyecto, REACT, JAVASCRIPT, NO, NO)
+
+code nombre-proyecto -r
+
+npm i
+
+npm i react-router-dom react-router-hash-link
+
+npm run dev

@@ -2,26 +2,25 @@ import axios from 'axios';
 
 const BASE_URL = 'http://localhost:9090/api/books';
 
-class booksService {
-  getbooks() {
-    return axios.get(BASE_URL);
-  }
+class BookService {
+    getAllBooks() {
+        return axios.get(BASE_URL);
+    }
 
-  addItem(item) {
-    return axios.post(BASE_URL, item);
-  }
+    getBookById(id) {
+        return axios.get(`${BASE_URL}/${id}`);
+    }
 
-  updateItem(id, item) {
-    return axios.put(`${BASE_URL}/${id}`, item);
-  }
+    createBook(book) {
+        return axios.post(BASE_URL, book);
+    }
 
-  deleteItem(id) {
-    return axios.delete(`${BASE_URL}/${id}`);
-  }
+    updateBook(id, book) {
+        return axios.put(`${BASE_URL}/${id}`, book);
+    }
 
-  clearCart() {
-    return axios.delete(BASE_URL);
-  }
+    deleteBook(id) {
+        return axios.delete(`${BASE_URL}/${id}`);
+    }
 }
-
 export default new booksService();

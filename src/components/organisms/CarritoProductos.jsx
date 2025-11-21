@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { ShoppingCart, Star, Plus, Minus, X, Trash2, Mail } from 'lucide-react';
 import './styles/login.css';
+import CartService from '../services/CartService';
 
 // Usar imágenes placeholder
 const imagenPlaceholder = 'https://via.placeholder.com/200x200?text=Pastel';
@@ -141,6 +142,20 @@ const categorias = ['Todas', 'Pasteles', 'muffins', 'Galletas', 'Postres', 'Donu
     };
   }, []);
 
+  // Al cargar el componente, intentar recuperar el carrito desde la API
+  useEffect(() => {
+    CartService.getCart()
+      .then(response => {
+        if (response && response.data) {
+          setCarrito(response.data);
+        }
+      })
+      .catch(err => {
+        // Si falla la conexión con la API, se mantiene el comportamiento local
+        console.log('No se pudo obtener carrito desde la API:', err.message || err);
+      });
+  }, []);
+
   const productosFiltrados = categoriaActiva === 'Todas' 
     ? productos 
     : productos.filter(p => p.categoria === categoriaActiva);
@@ -162,11 +177,23 @@ const categorias = ['Todas', 'Pasteles', 'muffins', 'Galletas', 'Postres', 'Donu
   const agregarAlCarrito = (producto) => {
     const existe = carrito.find(item => item.id === producto.id);
     if (existe) {
-      setCarrito(carrito.map(item =>
+      const nuevo = carrito.map(item =>
         item.id === producto.id ? { ...item, cantidad: item.cantidad + 1 } : item
-      ));
+      );
+      setCarrito(nuevo);
+      // Intentar sincronizar con la API
+      const actualizado = { ...existe, cantidad: existe.cantidad + 1 };
+      CartService.updateItem(actualizado.id, actualizado).catch(err => {
+        // si falla la actualización intentamos crear/añadir
+        CartService.addItem(actualizado).catch(e => console.log('Error sync add/update:', e));
+      });
     } else {
-      setCarrito([...carrito, { ...producto, cantidad: 1 }]);
+      const nuevoItem = { ...producto, cantidad: 1 };
+      setCarrito([...carrito, nuevoItem]);
+      CartService.addItem(nuevoItem).catch(err => {
+        // si falla, mostrar en consola y seguir funcionando localmente
+        console.log('Error al agregar item en la API:', err.message || err);
+      });
     }
   };
 
@@ -174,14 +201,20 @@ const categorias = ['Todas', 'Pasteles', 'muffins', 'Galletas', 'Postres', 'Donu
     if (nuevaCantidad <= 0) {
       eliminarDelCarrito(id);
     } else {
-      setCarrito(carrito.map(item =>
+      const actualizadoLocal = carrito.map(item =>
         item.id === id ? { ...item, cantidad: nuevaCantidad } : item
-      ));
+      );
+      setCarrito(actualizadoLocal);
+      const item = actualizadoLocal.find(i => i.id === id);
+      if (item) {
+        CartService.updateItem(id, item).catch(err => console.log('Error actualizar API:', err.message || err));
+      }
     }
   };
 
   const eliminarDelCarrito = (id) => {
     setCarrito(carrito.filter(item => item.id !== id));
+    CartService.deleteItem(id).catch(err => console.log('Error eliminar API:', err.message || err));
   };
 
   const calcularTotal = () => {

@@ -23,4 +23,5 @@ class BookService {
         return axios.delete(`${BASE_URL}/${id}`);
     }
 }
-export default new booksService();
+
+export default new BookService();

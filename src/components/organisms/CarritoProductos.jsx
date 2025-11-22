@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { ShoppingCart, Star, Plus, Minus, X, Trash2, Mail } from 'lucide-react';
 
+import ProductService from '../services/ProductService';
 
-// Usar imágenes placeholder
-const imagenPlaceholder = 'https://via.placeholder.com/200x200?text=Pastel';
+// Imagen placeholder
+const imagenPlaceholder = 'https://via.placeholder.com/200x200?text=Producto';
 
-const productos = [
+const productosFallback = [
   { 
     id: 'PAST001', 
     nombre: 'Pastel de Chocolate', 
@@ -107,92 +108,177 @@ const productos = [
   }
 ];
 
-const categorias = ['Todas', 'Pasteles', 'muffins', 'Galletas', 'Postres', 'Donuts'];function TiendaHuertoHogar() {
+const categorias = ['Todas', 'Pasteles', 'muffins', 'Galletas', 'Postres', 'Donuts'];
+
+function TiendaHuertoHogar() {
   const [categoriaActiva, setCategoriaActiva] = useState('Todas');
   const [carrito, setCarrito] = useState([]);
   const [mostrarCarrito, setMostrarCarrito] = useState(false);
   const [usuario, setUsuario] = useState('');
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [productos, setProductos] = useState([]);
+  const [mostrarForm, setMostrarForm] = useState(false);
+  const [seeding, setSeeding] = useState(false);
+  const [apiStatus, setApiStatus] = useState({ lastCount: null, lastError: null });
+  const [nuevoProducto, setNuevoProducto] = useState({
+    name: '',
+    categories: '',
+    price: 0,
+    image: imagenPlaceholder,
+    Stock: true,
+    Discount: false,
+    stars: 5
+  });
 
- 
+  // Enviar los productos de ejemplo al backend
+  const seedProducts = async () => {
+    if (seeding) return;
+    setSeeding(true);
+    try {
+      // Primero obtener productos existentes para evitar duplicados
+      let existing = [];
+      try {
+        const res = await ProductService.getProducts();
+        if (res && res.data) existing = res.data;
+      } catch (err) {
+        console.log('No se pudo obtener productos existentes antes de sembrar:', err);
+      }
+
+      // Normalizar nombres existentes para comparación
+      const existingNamesLower = new Set(
+        existing.map(e => ((e.name || e.nombre || '').toString().toLowerCase()).trim())
+      );
+
+      // Crear solo los productos que no existan (compara por nombre en minúsculas)
+      const toCreate = productosFallback.filter(p => {
+        const nameLower = (p.nombre || p.name || '').toString().toLowerCase().trim();
+        return !existingNamesLower.has(nameLower);
+      });
+
+      const promises = toCreate.map(p => {
+        const payload = {
+          name: p.nombre,
+          categories: p.categoria,
+          price: p.precio,
+          image: p.imagen || imagenPlaceholder,
+          Stock: !!p.stock,
+          Discount: !!p.enOferta,
+          stars: p.calificacion || 0
+        };
+        return ProductService.createProduct(payload);
+      });
+
+      const results = await Promise.allSettled(promises);
+      const errors = results.filter(r => r.status === 'rejected');
+      if (errors.length > 0) {
+        console.log('Algunos POST fallaron al sembrar productos:', errors);
+      }
+
+      // Intentar refrescar la lista desde el backend
+      try {
+        const res = await ProductService.getProducts();
+        if (res && res.data) setProductos(res.data);
+      } catch (refreshErr) {
+        console.log('No fue posible refrescar productos desde la API tras el seed:', refreshErr);
+      }
+
+      alert(`Sembrado completado. ${results.filter(r => r.status === 'fulfilled').length} creados, ${errors.length} fallos.`);
+    } catch (err) {
+      console.log('Error durante el seed de productos:', err);
+      alert('Error al intentar cargar productos de ejemplo; mira la consola.');
+    } finally {
+      setSeeding(false);
+    }
+  };
+
   useEffect(() => {
     const authStatus = localStorage.getItem('isAuthenticated');
     const usuarioGuardado = localStorage.getItem('usuario');
-    
     setIsAuthenticated(authStatus === 'true');
-    if (usuarioGuardado) {
-      setUsuario(usuarioGuardado);
-    }
+    if (usuarioGuardado) setUsuario(usuarioGuardado);
 
-   
     const handleAuthChange = () => {
       const authStatus = localStorage.getItem('isAuthenticated');
       const usuarioGuardado = localStorage.getItem('usuario');
       setIsAuthenticated(authStatus === 'true');
-      if (usuarioGuardado) {
-        setUsuario(usuarioGuardado);
-      }
+      if (usuarioGuardado) setUsuario(usuarioGuardado);
     };
 
     window.addEventListener('authChange', handleAuthChange);
-    
-    return () => {
-      window.removeEventListener('authChange', handleAuthChange);
-    };
+    return () => window.removeEventListener('authChange', handleAuthChange);
   }, []);
 
-  // Al cargar el componente, intentar recuperar el carrito desde la API
+  // Cargar productos desde backend
   useEffect(() => {
-    CartService.getCart()
-      .then(response => {
-        if (response && response.data) {
-          setCarrito(response.data);
+    ProductService.getProducts()
+      .then(res => {
+        if (res && res.data) {
+          // Si el backend retorna objetos con campos diferentes, puedes mapearlos aquí
+          setProductos(res.data);
+        } else {
+          setProductos(productosFallback);
         }
       })
       .catch(err => {
-        // Si falla la conexión con la API, se mantiene el comportamiento local
-        console.log('No se pudo obtener carrito desde la API:', err.message || err);
+        console.log('No fue posible cargar productos desde la API:', err.message || err);
+        setProductos(productosFallback);
       });
+
+    // intentar recuperar carrito desde API
+    ProductService.getCart()
+      .then(response => {
+        if (response && response.data) setCarrito(response.data);
+      })
+      .catch(() => {});
   }, []);
 
-  const productosFiltrados = categoriaActiva === 'Todas' 
-    ? productos 
-    : productos.filter(p => p.categoria === categoriaActiva);
-
-
-  const tieneDescuentoDuoc = (correo) => {
-    return correo && correo.toLowerCase().includes('@duocuc.cl');
-  };
-
+  const tieneDescuentoDuoc = (correo) => correo && correo.toLowerCase().includes('@duocuc.cl');
 
   const calcularPrecioFinal = (precio, descuento) => {
     const aplicarDescuento = tieneDescuentoDuoc(usuario);
-    if (!aplicarDescuento || descuento === 0) {
-      return precio;
-    }
+    if (!aplicarDescuento || !descuento) return precio;
     return precio - (precio * descuento / 100);
   };
 
+  const productosFiltrados = categoriaActiva === 'Todas' ? productos : productos.filter(p => p.categoria === categoriaActiva || p.categories === categoriaActiva);
+
   const agregarAlCarrito = (producto) => {
-    const existe = carrito.find(item => item.id === producto.id);
+    // Normalizar payload que enviaremos al backend para que puedas verificar en Postman
+    const payload = {
+      productId: producto.id,
+      name: producto.name || producto.nombre,
+      categories: producto.categories || producto.categoria,
+      price: producto.price || producto.precio || 0,
+      image: producto.image || producto.imagen || imagenPlaceholder,
+      cantidad: 1
+    };
+
+    const existe = carrito.find(item => item.productId === producto.id || item.id === producto.id);
     if (existe) {
-      const nuevo = carrito.map(item =>
-        item.id === producto.id ? { ...item, cantidad: item.cantidad + 1 } : item
-      );
+      // actualizar cantidad local y en la API
+      const nuevo = carrito.map(item => (item.productId === producto.id || item.id === producto.id) ? { ...item, cantidad: (item.cantidad || 0) + 1 } : item);
       setCarrito(nuevo);
-      // Intentar sincronizar con la API
-      const actualizado = { ...existe, cantidad: existe.cantidad + 1 };
-      CartService.updateItem(actualizado.id, actualizado).catch(err => {
-        // si falla la actualización intentamos crear/añadir
-        CartService.addItem(actualizado).catch(e => console.log('Error sync add/update:', e));
-      });
+      const actualizado = { ...(existe), cantidad: (existe.cantidad || 0) + 1 };
+      // Intentamos actualizar por productId si el backend usa ese campo
+      const updateId = existe.id || existe.productId || producto.id;
+      ProductService.updateCartItem(updateId, actualizado)
+        .catch(err => {
+          // si update falla, intentamos añadir o loguear
+          ProductService.addToCart({ ...payload, cantidad: actualizado.cantidad }).catch(e => console.log('Error sync add/update:', e));
+        });
     } else {
-      const nuevoItem = { ...producto, cantidad: 1 };
-      setCarrito([...carrito, nuevoItem]);
-      CartService.addItem(nuevoItem).catch(err => {
-        // si falla, mostrar en consola y seguir funcionando localmente
-        console.log('Error al agregar item en la API:', err.message || err);
-      });
+      // añadir localmente y enviar al backend
+      const nuevoItemLocal = { id: producto.id, productId: producto.id, nombre: producto.name || producto.nombre, price: producto.price || producto.precio || 0, imagen: producto.image || producto.imagen || imagenPlaceholder, cantidad: 1 };
+      setCarrito([...carrito, nuevoItemLocal]);
+      ProductService.addToCart(payload)
+        .then(res => {
+          // si la API devuelve el item (con id generado), reemplazamos/actualizamos localmente
+          if (res && res.data) {
+            const returned = res.data;
+            setCarrito(prev => prev.map(it => (it.productId === returned.productId || it.id === returned.productId) ? { ...it, apiId: returned.id, cantidad: returned.cantidad || it.cantidad } : it));
+          }
+        })
+        .catch(err => console.log('Error al agregar item en la API:', err.message || err));
     }
   };
 
@@ -200,279 +286,196 @@ const categorias = ['Todas', 'Pasteles', 'muffins', 'Galletas', 'Postres', 'Donu
     if (nuevaCantidad <= 0) {
       eliminarDelCarrito(id);
     } else {
-      const actualizadoLocal = carrito.map(item =>
-        item.id === id ? { ...item, cantidad: nuevaCantidad } : item
-      );
+      const actualizadoLocal = carrito.map(item => item.id === id ? { ...item, cantidad: nuevaCantidad } : item);
       setCarrito(actualizadoLocal);
       const item = actualizadoLocal.find(i => i.id === id);
-      if (item) {
-        CartService.updateItem(id, item).catch(err => console.log('Error actualizar API:', err.message || err));
-      }
+      if (item) ProductService.updateCartItem(id, item).catch(err => console.log('Error actualizar API:', err.message || err));
     }
   };
 
   const eliminarDelCarrito = (id) => {
     setCarrito(carrito.filter(item => item.id !== id));
-    CartService.deleteItem(id).catch(err => console.log('Error eliminar API:', err.message || err));
+    ProductService.removeFromCart(id).catch(err => console.log('Error eliminar API:', err.message || err));
   };
 
-  const calcularTotal = () => {
-    return carrito.reduce((total, item) => {
-      const precioFinal = calcularPrecioFinal(item.precio, item.descuento);
-      return total + (precioFinal * item.cantidad);
-    }, 0);
+  const calcularTotal = () => carrito.reduce((total, item) => total + (calcularPrecioFinal(item.precio || item.price || 0, item.descuento || item.descuento || 0) * item.cantidad), 0);
+  const calcularTotalSinDescuento = () => carrito.reduce((total, item) => total + ((item.precio || item.price || 0) * item.cantidad), 0);
+  const calcularAhorroTotal = () => calcularTotalSinDescuento() - calcularTotal();
+  const totalItems = carrito.reduce((sum, item) => sum + (item.cantidad || 0), 0);
+
+  // Crear nuevo producto (POST)
+  const handleCrearProducto = (e) => {
+    e.preventDefault();
+    // Preparar payload acorde al backend (ajusta nombres si es necesario)
+    // Validar la URL de la imagen: si no es una URL http/https válida, usar placeholder
+    const imageValue = (nuevoProducto.image && typeof nuevoProducto.image === 'string' && /^(https?:)?\/\//i.test(nuevoProducto.image))
+      ? nuevoProducto.image
+      : imagenPlaceholder;
+
+    const payload = {
+      name: nuevoProducto.name,
+      categories: nuevoProducto.categories,
+      price: Number(nuevoProducto.price),
+      image: imageValue,
+      Stock: !!nuevoProducto.Stock,
+      Discount: !!nuevoProducto.Discount,
+      stars: Number(nuevoProducto.stars)
+    };
+    console.log('Enviando payload a API:', payload);
+    ProductService.createProduct(payload)
+      .then(res => {
+        console.log('Respuesta createProduct:', res && res.data ? res.data : res);
+        // Si el backend devuelve el objeto creado, lo añadimos al estado
+        const creado = (res && res.data) ? res.data : { ...payload, id: `local-${Date.now()}`, nombre: payload.name };
+        setProductos(prev => [creado, ...prev]);
+        setMostrarForm(false);
+        setApiStatus({ lastCount: null, lastError: null });
+        alert('Producto creado correctamente en la API. Revisa con GET /api/products en Postman.');
+      })
+      .catch(err => {
+        // Mostrar detalles del error HTTP (body / status) si están disponibles
+        console.error('Error al crear producto en API:', err);
+        if (err.response) {
+          console.error('Error response data:', err.response.data);
+          console.error('Error response status:', err.response.status);
+        }
+        setApiStatus(prev => ({ ...prev, lastError: err.response ? `${err.response.status} - ${JSON.stringify(err.response.data)}` : (err.message || String(err)) }));
+        // Mantener comportamiento local pero informar claramente
+        const creadoLocal = { ...payload, id: `local-${Date.now()}`, nombre: payload.name };
+        setProductos(prev => [creadoLocal, ...prev]);
+        setMostrarForm(false);
+        alert('No se pudo guardar en la API. El producto fue añadido localmente. Revisa la consola para más detalles.');
+      });
   };
 
-  const calcularTotalSinDescuento = () => {
-    return carrito.reduce((total, item) => {
-      return total + (item.precio * item.cantidad);
-    }, 0);
+  const refreshFromApi = () => {
+    ProductService.getProducts()
+      .then(res => {
+        if (res && res.data) {
+          setProductos(res.data);
+          setApiStatus({ lastCount: res.data.length, lastError: null });
+          alert(`Refrescado desde API: ${res.data.length} productos obtenidos.`);
+        } else {
+          setApiStatus({ lastCount: 0, lastError: null });
+          alert('Refrescado: respuesta vacía de la API.');
+        }
+      })
+      .catch(err => {
+        console.error('Error al refrescar desde API:', err);
+        setApiStatus({ lastCount: null, lastError: err.message || String(err) });
+        alert('Error al refrescar desde la API. Revisa la consola.');
+      });
   };
-
-  const calcularAhorroTotal = () => {
-    return calcularTotalSinDescuento() - calcularTotal();
-  };
-
-  const totalItems = carrito.reduce((sum, item) => sum + item.cantidad, 0);
 
   return (
     <div className="tienda-contenedor">
-      
-      <div className="banner">
-        <h1>  oa </h1>
-        <div className='HOlas'>
-          <div className="banner-contenido">
-            <h3 className="logo-text"> </h3>
-            <h2 className="banner-titulo">🍰 ¡Dulces momentos para compartir! 🧁</h2>
-            <button className="banner-boton">
-              Conoce nuestros deliciosos productos
-            </button>
-          </div>
-        </div>
-        <div className="Descuento" style={{color:'#ffffffff',fontSize : '30px'}}>
-          🎉 Descuentos especiales en seleccionados 🎉
+      <div style={{ padding: '1rem', display: 'flex', justifyContent: 'space-between' }}>
+        <h2>Tienda</h2>
+        <div>
+          <button onClick={() => setMostrarForm(s => !s)} style={{ marginRight: 8 }}>{mostrarForm ? 'Cancelar' : 'Nuevo producto'}</button>
+          <button onClick={seedProducts} disabled={seeding} style={{ marginLeft: 8 }}>{seeding ? 'Cargando...' : 'Cargar productos al backend'}</button>
         </div>
       </div>
 
-      {/* Categorías */}
-      <div className="seccion-principal">
-        
-        {/* Alerta de descuento DuocUC */}
-        {isAuthenticated && tieneDescuentoDuoc(usuario) && (
-          <div className="alerta-descuento alerta-activo">
-          
-            <div className="d-flex justify-content-center">
-              <p className="text-success text-sm-left">¡Descuentos especiales aplicados!  <Mail size={24} /></p>
-            </div>
+      {mostrarForm && (
+        <form onSubmit={handleCrearProducto} style={{ padding: '0 1rem 1rem 1rem', display: 'grid', gap: 8 }}>
+          <input placeholder="Nombre" value={nuevoProducto.name} onChange={e => setNuevoProducto({ ...nuevoProducto, name: e.target.value })} required />
+          <input placeholder="Categorías" value={nuevoProducto.categories} onChange={e => setNuevoProducto({ ...nuevoProducto, categories: e.target.value })} />
+          <input placeholder="Precio" type="number" value={nuevoProducto.price} onChange={e => setNuevoProducto({ ...nuevoProducto, price: e.target.value })} required />
+          <input placeholder="Imagen URL" value={nuevoProducto.image} onChange={e => setNuevoProducto({ ...nuevoProducto, image: e.target.value })} />
+          <label style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+            <input type="checkbox" checked={nuevoProducto.Stock} onChange={e => setNuevoProducto({ ...nuevoProducto, Stock: e.target.checked })} /> En stock
+            <input type="checkbox" checked={nuevoProducto.Discount} onChange={e => setNuevoProducto({ ...nuevoProducto, Discount: e.target.checked })} style={{ marginLeft: 16 }} /> En oferta
+          </label>
+          <input placeholder="Estrellas (1-5)" type="number" value={nuevoProducto.stars} min={1} max={5} onChange={e => setNuevoProducto({ ...nuevoProducto, stars: e.target.value })} />
+          <div>
+            <button type="submit">Crear producto </button>
           </div>
-        )}
+        </form>
+      )}
 
-        {isAuthenticated && !tieneDescuentoDuoc(usuario) && (
-          <div className="alerta-descuento alerta-inactivo">
-           
-            <div>
-              <p className="alerta-titulo">Inicia sesión para obtener descuentos especiales</p>
-            </div>
+      <div style={{ padding: '0 1rem' }}>
+        <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 12 }}>
+          <button onClick={refreshFromApi} style={{ padding: '0.5rem 0.8rem' }}>Refrescar desde API</button>
+          <div style={{ fontSize: 14 }}>
+            {apiStatus.lastCount !== null && <span>Productos en API: <strong>{apiStatus.lastCount}</strong></span>}
+            {apiStatus.lastError && <span style={{ color: 'crimson' }}> Error API: {apiStatus.lastError}</span>}
           </div>
-        )}
-
-        {!isAuthenticated && (
-          <div className="alerta-descuento alerta-login">
-            
-            <div>
-              <p className="alerta-titulo">Inicia sesión para acceder a descuentos especiales</p>
-            </div>
-          </div>
-        )}
-
-        <h2 className="seccion-titulo ">
-          Categorías de productos
-        </h2>
-
+        </div>
         <div className="categorias-lista">
           {categorias.map(cat => (
-            <button
-              key={cat}
-              onClick={() => setCategoriaActiva(cat)}
-              className={`categoria-boton ${categoriaActiva === cat ? 'categoria-activa' : ''}`}
-            >
-              {cat}
-            </button>
+            <button key={cat} onClick={() => setCategoriaActiva(cat)} className={`categoria-boton ${categoriaActiva === cat ? 'categoria-activa' : ''}`}>{cat}</button>
           ))}
         </div>
 
-        {/* Productos */}
-        <h2 className="seccion-titulo">
-          Nuestros Deliciosos Postres
-        </h2>
         <div className="productos-grid">
           {productosFiltrados.map(producto => {
-            const precioFinal = calcularPrecioFinal(producto.precio, producto.descuento);
-            const tieneDescuentoActivo = tieneDescuentoDuoc(usuario) && producto.enOferta;
-            
+            const precio = producto.price || producto.precio || 0;
+            const descuento = producto.descuento || producto.descuento || 0;
+            const precioFinal = calcularPrecioFinal(precio, descuento);
             return (
-              <div key={producto.id} className="producto-card">
-                {producto.enOferta && (
-                  <div className={`producto-oferta-tag ${tieneDescuentoActivo ? 'oferta-duoc' : ''}`}>
-                    {tieneDescuentoActivo ? '🎓' : ''} -{producto.descuento}%
-                  </div>
-                )}
+              <div key={producto.id || producto.name} className="producto-card">
                 <div className="producto-imagen-contenedor">
-                  <img 
-                    src={producto.imagen} 
-                    alt={producto.nombre}
-                    className="producto-imagen"
-                  />
+                  <img src={producto.image || producto.imagen || imagenPlaceholder} alt={producto.name || producto.nombre} className="producto-imagen" />
                 </div>
-                <h3 className="producto-nombre">
-                  {producto.nombre}
-                </h3>
-                <p className="producto-codigo">
-                  Código: {producto.id}
-                </p>
+                <h3 className="producto-nombre">{producto.name || producto.nombre}</h3>
+                <p className="producto-codigo">Código: {producto.id}</p>
                 <div className="producto-calificacion">
                   {[...Array(5)].map((_, i) => (
-                    <Star
-                      key={i}
-                      size={16}
-                      fill={i < producto.calificacion ? 'var(--color-badge-oferta)' : 'none'}
-                      stroke={i < producto.calificacion ? 'var(--color-badge-oferta)' : '#ccc'}
-                    />
+                    <Star key={i} size={16} fill={i < (producto.stars || producto.calificacion || 0) ? 'var(--color-badge-oferta)' : 'none'} stroke={i < (producto.stars || producto.calificacion || 0) ? 'var(--color-badge-oferta)' : '#ccc'} />
                   ))}
-                  <span className="calificacion-texto">
-                    ({producto.calificacion})
-                  </span>
                 </div>
                 <div className="producto-precio-info">
-                  {tieneDescuentoActivo && (
-                    <p className="precio-tachado">
-                      ${producto.precio.toLocaleString()}
-                    </p>
-                  )}
-                  <p className="precio-final">
-                    ${precioFinal.toLocaleString()}
-                    <span className="precio-unidad"> c/u</span>
-                  </p>
+                  <p className="precio-final">${precioFinal.toLocaleString()} <span className="precio-unidad">c/u</span></p>
                 </div>
-                <button
-                  onClick={() => agregarAlCarrito(producto)}
-                  className="producto-boton-agregar"
-                >
-                  <Plus size={20} />
-                  Añadir al carrito
-                </button>
+                <button onClick={() => agregarAlCarrito(producto)} className="producto-boton-agregar"><Plus size={20} /> Añadir al carrito</button>
               </div>
             );
           })}
         </div>
       </div>
 
-      <button
-        onClick={() => setMostrarCarrito(true)}
-        className="carrito-flotante-boton"
-        aria-label='abrir-carrito'
-      >
+      <button onClick={() => setMostrarCarrito(true)} className="carrito-flotante-boton" aria-label='abrir-carrito'>
         <ShoppingCart size={30} />
-        {totalItems > 0 && (
-          <span className="carrito-flotante-contador">
-            {totalItems}
-          </span>
-        )}
+        {totalItems > 0 && (<span className="carrito-flotante-contador">{totalItems}</span>)}
       </button>
 
-      {/* Modal del Carrito */}
       {mostrarCarrito && (
         <div className="modal-overlay">
           <div className="carrito-modal">
             <div className="modal-header">
-              <h2 className="modal-titulo">
-                <ShoppingCart size={24} className="modal-icono" />
-                Mi Carrito
-              </h2>
-              <button
-                onClick={() => setMostrarCarrito(false)}
-                className="modal-cerrar-boton"
-              >
-                <X size={28} />
-              </button>
+              <h2 className="modal-titulo"><ShoppingCart size={24} className="modal-icono" /> Mi Carrito</h2>
+              <button onClick={() => setMostrarCarrito(false)} className="modal-cerrar-boton"><X size={28} /></button>
             </div>
 
-            {/* Estado del descuento en el carrito */}
             <div className={`carrito-estado-descuento ${tieneDescuentoDuoc(usuario) ? 'estado-activo' : 'estado-inactivo'}`}>
               <Mail size={20} />
               <div>
-                <p className="estado-titulo">
-                  {tieneDescuentoDuoc(usuario) 
-                    ? '✓ Descuentos DuocUC aplicados' 
-                    : isAuthenticated 
-                      ? '✗ Sin descuentos DuocUC'
-                      : '✗ Inicia sesión con @duocuc.cl'}
-                </p>
-                {isAuthenticated && (
-                  <p className="estado-subtitulo">{usuario}</p>
-                )}
+                <p className="estado-titulo">{tieneDescuentoDuoc(usuario) ? '✓ Descuentos DuocUC aplicados' : isAuthenticated ? '✗ Sin descuentos DuocUC' : '✗ Inicia sesión con @duocuc.cl'}</p>
+                {isAuthenticated && <p className="estado-subtitulo">{usuario}</p>}
               </div>
             </div>
-            
+
             <div className="modal-cuerpo">
               {carrito.length === 0 ? (
-                <p className="carrito-vacio-mensaje">
-                  Tu carrito está vacío
-                </p>
+                <p className="carrito-vacio-mensaje">Tu carrito está vacío</p>
               ) : (
                 carrito.map(item => {
-                  const precioFinal = calcularPrecioFinal(item.precio, item.descuento);
-                  const tieneDescuentoActivo = tieneDescuentoDuoc(usuario) && item.enOferta;
-                  
+                  const precioFinal = calcularPrecioFinal(item.precio || item.price || 0, item.descuento || 0);
                   return (
                     <div key={item.id} className="carrito-item">
-                      <div className="carrito-item-imagen-contenedor">
-                        <img 
-                          src={item.imagen} 
-                          alt={item.nombre}
-                          className="carrito-item-imagen"
-                        />
-                      </div>
+                      <div className="carrito-item-imagen-contenedor"><img src={item.imagen || item.image || imagenPlaceholder} alt={item.nombre || item.name} className="carrito-item-imagen" /></div>
                       <div className="carrito-item-detalles">
-                        <h4 className="carrito-item-nombre">{item.nombre}</h4>
-                        <p className="carrito-item-precio-unitario">
-                          ${precioFinal.toLocaleString()} c/u
-                        </p>
-                        {tieneDescuentoActivo && (
-                          <span className="carrito-item-descuento-tag descuento-duoc">
-                            🎁 -{item.descuento}% Descuento
-                          </span>
-                        )}
+                        <h4 className="carrito-item-nombre">{item.nombre || item.name}</h4>
+                        <p className="carrito-item-precio-unitario">${precioFinal.toLocaleString()} c/u</p>
                       </div>
                       <div className="carrito-item-cantidad-control">
-                        <button
-                          onClick={() => actualizarCantidad(item.id, item.cantidad - 1)}
-                          className="cantidad-boton cantidad-restar"
-                        >
-                          <Minus size={16} />
-                        </button>
-                        <span className="cantidad-display">
-                          {item.cantidad} unidad(es)
-                        </span>
-                        <button
-                          onClick={() => actualizarCantidad(item.id, item.cantidad + 1)}
-                          className="cantidad-boton cantidad-sumar"
-                        >
-                          <Plus size={16} />
-                        </button>
-                        <button
-                          onClick={() => eliminarDelCarrito(item.id)}
-                          className="cantidad-boton cantidad-eliminar"
-                          aria-label={`eliminar ${item.nombre}`}
-                        >
-                          <Trash2 size={16} />
-                        </button>
+                        <button onClick={() => actualizarCantidad(item.id, item.cantidad - 1)} className="cantidad-boton cantidad-restar"><Minus size={16} /></button>
+                        <span className="cantidad-display">{item.cantidad} unidad(es)</span>
+                        <button onClick={() => actualizarCantidad(item.id, item.cantidad + 1)} className="cantidad-boton cantidad-sumar"><Plus size={16} /></button>
+                        <button onClick={() => eliminarDelCarrito(item.id)} className="cantidad-boton cantidad-eliminar" aria-label={`eliminar ${item.nombre || item.name}`}><Trash2 size={16} /></button>
                       </div>
-                      <div className="carrito-item-subtotal">
-                        <p className="carrito-item-subtotal-texto">
-                          ${(precioFinal * item.cantidad).toLocaleString()}
-                        </p>
-                      </div>
+                      <div className="carrito-item-subtotal"><p className="carrito-item-subtotal-texto">${((precioFinal) * (item.cantidad || 0)).toLocaleString()}</p></div>
                     </div>
                   );
                 })
@@ -483,23 +486,12 @@ const categorias = ['Todas', 'Pasteles', 'muffins', 'Galletas', 'Postres', 'Donu
               <div className="modal-footer">
                 {tieneDescuentoDuoc(usuario) && calcularAhorroTotal() > 0 && (
                   <div className="resumen-ahorro">
-                    <div className="ahorro-linea">
-                      <span>Subtotal:</span>
-                      <span>${calcularTotalSinDescuento().toLocaleString()}</span>
-                    </div>
-                    <div className="ahorro-linea ahorro-destacado">
-                      <span>🎁 Descuento aplicado:</span>
-                      <span>-${calcularAhorroTotal().toLocaleString()}</span>
-                    </div>
+                    <div className="ahorro-linea"><span>Subtotal:</span><span>${calcularTotalSinDescuento().toLocaleString()}</span></div>
+                    <div className="ahorro-linea ahorro-destacado"><span> Descuento aplicado:</span><span>-${calcularAhorroTotal().toLocaleString()}</span></div>
                   </div>
                 )}
-                <div className="carrito-total">
-                  <span>Total:</span>
-                  <span className="carrito-total-valor">${calcularTotal().toLocaleString()}</span>
-                </div>
-                <button className="checkout-boton">
-                  Proceder al pago
-                </button>
+                <div className="carrito-total"><span>Total:</span><span className="carrito-total-valor">${calcularTotal().toLocaleString()}</span></div>
+                <button className="checkout-boton">Proceder al pago</button>
               </div>
             )}
           </div>

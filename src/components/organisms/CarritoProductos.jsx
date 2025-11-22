@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ShoppingCart, Star, Plus, Minus, X, Trash2, Mail } from 'lucide-react';
-import './styles/login.css';
-import CartService from '../services/CartService';
+
 
 // Usar imágenes placeholder
 const imagenPlaceholder = 'https://via.placeholder.com/200x200?text=Pastel';

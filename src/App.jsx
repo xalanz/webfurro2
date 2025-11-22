@@ -30,3 +30,15 @@ function App() {
 }
 
 export default App
+
+
+
+
+
+
+
+
+
+
+//comando npm i react-router-dom react-router-hash-link
+//npm install axios react-router-dom

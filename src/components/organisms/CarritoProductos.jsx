@@ -116,8 +116,10 @@ function TiendaHuertoHogar() {
   const [mostrarCarrito, setMostrarCarrito] = useState(false);
   const [usuario, setUsuario] = useState('');
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
   const [productos, setProductos] = useState([]);
   const [mostrarForm, setMostrarForm] = useState(false);
+  const [editandoProducto, setEditandoProducto] = useState(null);
   const [seeding, setSeeding] = useState(false);
   const [apiStatus, setApiStatus] = useState({ lastCount: null, lastError: null });
   const [nuevoProducto, setNuevoProducto] = useState({
@@ -194,13 +196,17 @@ function TiendaHuertoHogar() {
   useEffect(() => {
     const authStatus = localStorage.getItem('isAuthenticated');
     const usuarioGuardado = localStorage.getItem('usuario');
+    const adminStatus = localStorage.getItem('isAdmin');
     setIsAuthenticated(authStatus === 'true');
+    setIsAdmin(adminStatus === 'true');
     if (usuarioGuardado) setUsuario(usuarioGuardado);
 
     const handleAuthChange = () => {
       const authStatus = localStorage.getItem('isAuthenticated');
       const usuarioGuardado = localStorage.getItem('usuario');
+      const adminStatus = localStorage.getItem('isAdmin');
       setIsAuthenticated(authStatus === 'true');
+      setIsAdmin(adminStatus === 'true');
       if (usuarioGuardado) setUsuario(usuarioGuardado);
     };
 
@@ -367,17 +373,67 @@ function TiendaHuertoHogar() {
       });
   };
 
+  const handleEditarProducto = (producto) => {
+    setEditandoProducto({ ...producto });
+  };
+
+  const handleGuardarEdicion = (e) => {
+    e.preventDefault();
+    if (!editandoProducto) return;
+
+    const payload = {
+      name: editandoProducto.name || editandoProducto.nombre,
+      categories: editandoProducto.categories || editandoProducto.categoria,
+      price: Number(editandoProducto.price || editandoProducto.precio),
+      image: editandoProducto.image || editandoProducto.imagen || imagenPlaceholder,
+      Stock: !!editandoProducto.Stock,
+      Discount: !!editandoProducto.Discount,
+      stars: Number(editandoProducto.stars || editandoProducto.calificacion)
+    };
+
+    ProductService.updateProduct(editandoProducto.id, payload)
+      .then(res => {
+        const actualizado = (res && res.data) ? res.data : { ...editandoProducto, ...payload };
+        setProductos(prev => prev.map(p => p.id === editandoProducto.id ? actualizado : p));
+        setEditandoProducto(null);
+        alert('Producto actualizado correctamente.');
+      })
+      .catch(err => {
+        console.error('Error al actualizar producto:', err);
+        alert('Error al actualizar. Revisa la consola.');
+      });
+  };
+
+  const handleEliminarProducto = (id) => {
+    if (!window.confirm('¿Estás seguro de que deseas eliminar este producto?')) return;
+
+    ProductService.deleteProduct(id)
+      .then(() => {
+        setProductos(prev => prev.filter(p => p.id !== id));
+        alert('Producto eliminado correctamente.');
+      })
+      .catch(err => {
+        console.error('Error al eliminar producto:', err);
+        alert('Error al eliminar. Revisa la consola.');
+      });
+  };
+
   return (
     <div className="tienda-contenedor">
-      <div style={{ padding: '1rem', display: 'flex', justifyContent: 'space-between' }}>
+      <div style={{ padding: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <h2>Tienda</h2>
-        <div>
-          <button onClick={() => setMostrarForm(s => !s)} style={{ marginRight: 8 }}>{mostrarForm ? 'Cancelar' : 'Nuevo producto'}</button>
-          <button onClick={seedProducts} disabled={seeding} style={{ marginLeft: 8 }}>{seeding ? 'Cargando...' : 'Cargar productos al backend'}</button>
-        </div>
+        {isAdmin && (
+          <div>
+            <button onClick={() => setMostrarForm(s => !s)} style={{ marginRight: 8 }}>{mostrarForm ? 'Cancelar' : 'Nuevo producto'}</button>
+            <button onClick={seedProducts} disabled={seeding} style={{ marginLeft: 8 }}>{seeding ? 'Cargando...' : 'Cargar productos al backend'}</button>
+          </div>
+        )}
+        {!isAdmin && isAuthenticated && (
+          <p style={{ color: '#666', fontSize: '0.9rem' }}>Solo admin puede crear/editar productos</p>
+        )}
       </div>
 
-      {mostrarForm && (
+      {mostrarForm && isAdmin && (
         <form onSubmit={handleCrearProducto} style={{ padding: '0 1rem 1rem 1rem', display: 'grid', gap: 8 }}>
           <input placeholder="Nombre" value={nuevoProducto.name} onChange={e => setNuevoProducto({ ...nuevoProducto, name: e.target.value })} required />
           <input placeholder="Categorías" value={nuevoProducto.categories} onChange={e => setNuevoProducto({ ...nuevoProducto, categories: e.target.value })} />
@@ -395,13 +451,15 @@ function TiendaHuertoHogar() {
       )}
 
       <div style={{ padding: '0 1rem' }}>
-        <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 12 }}>
-          <button onClick={refreshFromApi} style={{ padding: '0.5rem 0.8rem' }}>Refrescar desde API</button>
-          <div style={{ fontSize: 14 }}>
-            {apiStatus.lastCount !== null && <span>Productos en API: <strong>{apiStatus.lastCount}</strong></span>}
-            {apiStatus.lastError && <span style={{ color: 'crimson' }}> Error API: {apiStatus.lastError}</span>}
+        {isAdmin && (
+          <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 12 }}>
+            <button onClick={refreshFromApi} style={{ padding: '0.5rem 0.8rem', backgroundColor: '#2196F3', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>Refrescar desde API</button>
+            <div style={{ fontSize: 14 }}>
+              {apiStatus.lastCount !== null && <span>Productos en API: <strong>{apiStatus.lastCount}</strong></span>}
+              {apiStatus.lastError && <span style={{ color: 'crimson' }}> Error API: {apiStatus.lastError}</span>}
+            </div>
           </div>
-        </div>
+        )}
         <div className="categorias-lista">
           {categorias.map(cat => (
             <button key={cat} onClick={() => setCategoriaActiva(cat)} className={`categoria-boton ${categoriaActiva === cat ? 'categoria-activa' : ''}`}>{cat}</button>
@@ -416,7 +474,7 @@ function TiendaHuertoHogar() {
             return (
               <div key={producto.id || producto.name} className="producto-card">
                 <div className="producto-imagen-contenedor">
-                  <img src={producto.image || producto.imagen || imagenPlaceholder} alt={producto.name || producto.nombre} className="producto-imagen" />
+                  <img src={producto.image || producto.imagen || imagenPlaceholder} alt={producto.name || producto.nombre} className="producto-imagen" onError={e => { e.target.onerror = null; e.target.src = imagenPlaceholder; }} />
                 </div>
                 <h3 className="producto-nombre">{producto.name || producto.nombre}</h3>
                 <p className="producto-codigo">Código: {producto.id}</p>
@@ -429,6 +487,12 @@ function TiendaHuertoHogar() {
                   <p className="precio-final">${precioFinal.toLocaleString()} <span className="precio-unidad">c/u</span></p>
                 </div>
                 <button onClick={() => agregarAlCarrito(producto)} className="producto-boton-agregar"><Plus size={20} /> Añadir al carrito</button>
+                {isAdmin && (
+                  <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.5rem' }}>
+                    <button onClick={() => handleEditarProducto(producto)} style={{ flex: 1, padding: '0.5rem', backgroundColor: '#4CAF50', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '0.9rem' }}>Editar</button>
+                    <button onClick={() => handleEliminarProducto(producto.id)} style={{ flex: 1, padding: '0.5rem', backgroundColor: '#f44336', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '0.9rem' }}>Eliminar</button>
+                  </div>
+                )}
               </div>
             );
           })}
@@ -439,6 +503,33 @@ function TiendaHuertoHogar() {
         <ShoppingCart size={30} />
         {totalItems > 0 && (<span className="carrito-flotante-contador">{totalItems}</span>)}
       </button>
+
+      {/* Modal de Edición de Productos */}
+      {editandoProducto && isAdmin && (
+        <div className="modal-overlay">
+          <div className="carrito-modal">
+            <div className="modal-header">
+              <h2 className="modal-titulo">Editar Producto</h2>
+              <button onClick={() => setEditandoProducto(null)} className="modal-cerrar-boton"><X size={28} /></button>
+            </div>
+            <form onSubmit={handleGuardarEdicion} style={{ padding: '1rem', display: 'grid', gap: 8 }}>
+              <input placeholder="Nombre" value={editandoProducto.name || editandoProducto.nombre} onChange={e => setEditandoProducto({ ...editandoProducto, name: e.target.value, nombre: e.target.value })} required />
+              <input placeholder="Categorías" value={editandoProducto.categories || editandoProducto.categoria} onChange={e => setEditandoProducto({ ...editandoProducto, categories: e.target.value, categoria: e.target.value })} />
+              <input placeholder="Precio" type="number" value={editandoProducto.price || editandoProducto.precio} onChange={e => setEditandoProducto({ ...editandoProducto, price: e.target.value, precio: e.target.value })} required />
+              <input placeholder="Imagen URL" value={editandoProducto.image || editandoProducto.imagen} onChange={e => setEditandoProducto({ ...editandoProducto, image: e.target.value, imagen: e.target.value })} />
+              <label style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                <input type="checkbox" checked={editandoProducto.Stock} onChange={e => setEditandoProducto({ ...editandoProducto, Stock: e.target.checked })} /> En stock
+                <input type="checkbox" checked={editandoProducto.Discount} onChange={e => setEditandoProducto({ ...editandoProducto, Discount: e.target.checked })} style={{ marginLeft: 16 }} /> En oferta
+              </label>
+              <input placeholder="Estrellas (1-5)" type="number" value={editandoProducto.stars || editandoProducto.calificacion} min={1} max={5} onChange={e => setEditandoProducto({ ...editandoProducto, stars: e.target.value, calificacion: e.target.value })} />
+              <div style={{ display: 'flex', gap: '0.5rem' }}>
+                <button type="submit" style={{ flex: 1, padding: '0.7rem', backgroundColor: '#4CAF50', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>Guardar cambios</button>
+                <button type="button" onClick={() => setEditandoProducto(null)} style={{ flex: 1, padding: '0.7rem', backgroundColor: '#999', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>Cancelar</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
       {mostrarCarrito && (
         <div className="modal-overlay">

@@ -1,11 +1,29 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 
 export default function LoginLayout() {
+	const [email, setEmail] = useState('');
+	const [password, setPassword] = useState('');
+	const navigate = useNavigate();
+
 	const handleSubmit = (e) => {
 		e.preventDefault();
-		// TODO: implementar autenticación
-		console.log('Login submitted');
+		
+		// Credenciales admin fijas (en producción usar backend)
+		const isAdmin = email === 'admin@duocuc.cl' && password === 'admin123';
+		
+		// Guardar en localStorage
+		localStorage.setItem('isAuthenticated', 'true');
+		localStorage.setItem('usuario', email);
+		localStorage.setItem('isAdmin', isAdmin ? 'true' : 'false');
+		
+		// Dispatchear evento para que otros componentes se actualicen
+		window.dispatchEvent(new Event('authChange'));
+		
+		console.log('Login exitoso:', { email, isAdmin });
+		
+		// Redirigir a home
+		navigate('/Home');
 	};
 
 	return (
@@ -25,6 +43,8 @@ export default function LoginLayout() {
 							id="email"
 							className="login-input"
 							placeholder="tu@email.com"
+							value={email}
+							onChange={(e) => setEmail(e.target.value)}
 							required
 						/>
 					</div>
@@ -36,6 +56,8 @@ export default function LoginLayout() {
 							id="password"
 							className="login-input"
 							placeholder="••••••••"
+							value={password}
+							onChange={(e) => setPassword(e.target.value)}
 							required
 						/>
 					</div>
@@ -48,6 +70,12 @@ export default function LoginLayout() {
 					
 
 					<button type="submit" className="login-button">Iniciar Sesión</button>
+					
+					<div style={{ marginTop: '1rem', padding: '0.8rem', backgroundColor: '#f0f8ff', borderRadius: '4px', fontSize: '0.85rem', color: '#333' }}>
+						<p><strong>Demo Admin:</strong></p>
+						<p>Email: <code>admin@duocuc.cl</code></p>
+						<p>Contraseña: <code>admin123</code></p>
+					</div>
                     
 				</form>
 

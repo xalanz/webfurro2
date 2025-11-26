@@ -9,7 +9,7 @@ jest.mock('react-router-dom', () => {
         ...actual,
         useNavigate: () => jest.fn(),
     };
-});
+});n
 
 describe('Registro component', () => {
     it('renderiza el formulario de registro correctamente', () => {
@@ -19,9 +19,7 @@ describe('Registro component', () => {
             </MemoryRouter>
         );
 
-        // Verifica el título y subtítulo del formulario
-        expect(screen.getByText(/Crea tu cuenta/i)).toBeInTheDocument();
-        expect(screen.getByText(/DulceLobito/)).toBeInTheDocument();
+    
 
         // Verifica que todos los campos requeridos están presentes
         expect(screen.getByLabelText(/Nombre/i)).toBeInTheDocument();

@@ -9,7 +9,7 @@ jest.mock('react-router-dom', () => {
         ...actual,
         useNavigate: () => jest.fn(),
     };
-});n
+});
 
 describe('Registro component', () => {
     it('renderiza el formulario de registro correctamente', () => {

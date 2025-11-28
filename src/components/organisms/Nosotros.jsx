@@ -1,4 +1,3 @@
-import { Leaf, Zap, Users, Globe } from 'lucide-react'; 
 import '../organisms/styles/Informacion.css';
 import 'bootstrap/dist/css/bootstrap.min.css'; 
 
@@ -28,7 +27,7 @@ function Nosotros() {
                 <div className="card shadow-sm team-card">
                   <div className="card-body text-center">
                     <div className="team-photo-placeholder mx-auto mb-3">
-                      <Users size={50} className="text-success" />
+                      <div style={{fontSize: '50px'}}>👤</div>
                     </div>
                     <h4 className="card-title text-success fw-bold justify-content-center">
                       Luis Paredes
@@ -50,7 +49,7 @@ function Nosotros() {
                 <div className="card shadow-sm team-card">
                   <div className="card-body text-center">
                     <div className="team-photo-placeholder mx-auto mb-3">
-                      <Users size={50} className="text-success" />
+                      <div style={{fontSize: '50px'}}>👤</div>
                     </div>
                     <h4 className="card-title text-success fw-bold justify-content-center">
                       Camilo Araneda
@@ -72,7 +71,7 @@ function Nosotros() {
                 <div className="card shadow-sm team-card">
                   <div className="card-body text-center">
                     <div className="team-photo-placeholder mx-auto mb-3">
-                      <Users size={50} className="text-success" />
+                      <div style={{fontSize: '50px'}}>👤</div>
                     </div>
                     <h4 className="card-title text-success fw-bold justify-content-center">
                       Alan Thomas 
@@ -99,7 +98,7 @@ function Nosotros() {
             <div className="row justify-content-center text-center">
               
               <div className="col-md-4 mb-4">
-                <Globe size={40} className="text-success mb-3 impact-icon" />
+                <div style={{fontSize: '40px', marginBottom: '12px'}}>🌍</div>
                 <h4 className="fw-bold text-success">Reducción de Huella de Carbono</h4>
                 <p className="text-muted">
                   Rutas optimizadas y transporte eficiente para minimizar emisiones
@@ -107,7 +106,7 @@ function Nosotros() {
               </div>
 
               <div className="col-md-4 mb-4">
-                <Leaf size={40} className="text-success mb-3 impact-icon" />
+                <div style={{fontSize: '40px', marginBottom: '12px'}}>🍃</div>
                 <h4 className="fw-bold text-success">Empaques 100% Reciclados</h4>
                 <p className="text-muted">
                   Materiales biodegradables y reutilizables en todas nuestras entregas
@@ -115,7 +114,7 @@ function Nosotros() {
               </div>
 
               <div className="col-md-4 mb-4">
-                <Zap size={40} className="text-success mb-3 impact-icon" />
+                <div style={{fontSize: '40px', marginBottom: '12px'}}>⚡</div>
                 <h4 className="fw-bold text-success">Fomento de Agricultura</h4>
                 <p className="text-muted">
                   Apoyo directo a productores locales y prácticas agrícolas sostenibles

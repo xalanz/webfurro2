@@ -1,6 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { ShoppingCart, Star, Plus, Minus, X, Trash2, Mail } from 'lucide-react';
-
 import ProductService from '../services/ProductService';
 
 // Imagen placeholder
@@ -480,13 +478,13 @@ function TiendaHuertoHogar() {
                 <p className="producto-codigo">Código: {producto.id}</p>
                 <div className="producto-calificacion">
                   {[...Array(5)].map((_, i) => (
-                    <Star key={i} size={16} fill={i < (producto.stars || producto.calificacion || 0) ? 'var(--color-badge-oferta)' : 'none'} stroke={i < (producto.stars || producto.calificacion || 0) ? 'var(--color-badge-oferta)' : '#ccc'} />
+                    <span key={i} style={{ color: i < (producto.stars || producto.calificacion || 0) ? 'var(--color-badge-oferta)' : '#ccc', fontSize: '1.2rem' }}>★</span>
                   ))}
                 </div>
                 <div className="producto-precio-info">
                   <p className="precio-final">${precioFinal.toLocaleString()} <span className="precio-unidad">c/u</span></p>
                 </div>
-                <button onClick={() => agregarAlCarrito(producto)} className="producto-boton-agregar"><Plus size={20} /> Añadir al carrito</button>
+                <button onClick={() => agregarAlCarrito(producto)} className="producto-boton-agregar"> Añadir al carrito</button>
                 {isAdmin && (
                   <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.5rem' }}>
                     <button onClick={() => handleEditarProducto(producto)} style={{ flex: 1, padding: '0.5rem', backgroundColor: '#4CAF50', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '0.9rem' }}>Editar</button>
@@ -500,7 +498,7 @@ function TiendaHuertoHogar() {
       </div>
 
       <button onClick={() => setMostrarCarrito(true)} className="carrito-flotante-boton" aria-label='abrir-carrito'>
-        <ShoppingCart size={30} />
+        🛒
         {totalItems > 0 && (<span className="carrito-flotante-contador">{totalItems}</span>)}
       </button>
 
@@ -510,7 +508,7 @@ function TiendaHuertoHogar() {
           <div className="carrito-modal">
             <div className="modal-header">
               <h2 className="modal-titulo">Editar Producto</h2>
-              <button onClick={() => setEditandoProducto(null)} className="modal-cerrar-boton"><X size={28} /></button>
+              <button onClick={() => setEditandoProducto(null)} className="modal-cerrar-boton">✕</button>
             </div>
             <form onSubmit={handleGuardarEdicion} style={{ padding: '1rem', display: 'grid', gap: 8 }}>
               <input placeholder="Nombre" value={editandoProducto.name || editandoProducto.nombre} onChange={e => setEditandoProducto({ ...editandoProducto, name: e.target.value, nombre: e.target.value })} required />
@@ -535,12 +533,12 @@ function TiendaHuertoHogar() {
         <div className="modal-overlay">
           <div className="carrito-modal">
             <div className="modal-header">
-              <h2 className="modal-titulo"><ShoppingCart size={24} className="modal-icono" /> Mi Carrito</h2>
-              <button onClick={() => setMostrarCarrito(false)} className="modal-cerrar-boton"><X size={28} /></button>
+              <h2 className="modal-titulo">🛒 Mi Carrito</h2>
+              <button onClick={() => setMostrarCarrito(false)} className="modal-cerrar-boton">✕</button>
             </div>
 
             <div className={`carrito-estado-descuento ${tieneDescuentoDuoc(usuario) ? 'estado-activo' : 'estado-inactivo'}`}>
-              <Mail size={20} />
+              <span style={{ fontSize: '1.5rem' }}>✉️</span>
               <div>
                 <p className="estado-titulo">{tieneDescuentoDuoc(usuario) ? '✓ Descuentos DuocUC aplicados' : isAuthenticated ? '✗ Sin descuentos DuocUC' : '✗ Inicia sesión con @duocuc.cl'}</p>
                 {isAuthenticated && <p className="estado-subtitulo">{usuario}</p>}
@@ -561,10 +559,10 @@ function TiendaHuertoHogar() {
                         <p className="carrito-item-precio-unitario">${precioFinal.toLocaleString()} c/u</p>
                       </div>
                       <div className="carrito-item-cantidad-control">
-                        <button onClick={() => actualizarCantidad(item.id, item.cantidad - 1)} className="cantidad-boton cantidad-restar"><Minus size={16} /></button>
+                        <button onClick={() => actualizarCantidad(item.id, item.cantidad - 1)} className="cantidad-boton cantidad-restar">−</button>
                         <span className="cantidad-display">{item.cantidad} unidad(es)</span>
-                        <button onClick={() => actualizarCantidad(item.id, item.cantidad + 1)} className="cantidad-boton cantidad-sumar"><Plus size={16} /></button>
-                        <button onClick={() => eliminarDelCarrito(item.id)} className="cantidad-boton cantidad-eliminar" aria-label={`eliminar ${item.nombre || item.name}`}><Trash2 size={16} /></button>
+                        <button onClick={() => actualizarCantidad(item.id, item.cantidad + 1)} className="cantidad-boton cantidad-sumar">+</button>
+                        <button onClick={() => eliminarDelCarrito(item.id)} className="cantidad-boton cantidad-eliminar" aria-label={`eliminar ${item.nombre || item.name}`}>🗑️</button>
                       </div>
                       <div className="carrito-item-subtotal"><p className="carrito-item-subtotal-texto">${((precioFinal) * (item.cantidad || 0)).toLocaleString()}</p></div>
                     </div>

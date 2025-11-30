@@ -37,5 +37,4 @@ const Productos = ({ items = defaultItems }) => (
 );
 
 
-//Hola tio este e mi primer mensaje
 export default Productos;

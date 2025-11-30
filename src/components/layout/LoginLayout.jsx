@@ -105,9 +105,9 @@ export default function LoginLayout() {
                     <button type="submit" className="login-button">Iniciar Sesión</button>
                     
                     <div style={{ marginTop: '1rem', padding: '0.8rem', backgroundColor: '#f0f8ff', borderRadius: '4px', fontSize: '0.85rem', color: '#333' }}>
-                        <p><strong>Recuerda:</strong></p>
-                        <p>Debes registrar el usuario en Postman antes de iniciar sesión aquí.</p>
-                        <p>Ejemplo: Usuario: <code>nombre.unico</code>, Contraseña: <code>miPasswordSegura</code></p>
+                        <p><strong>prueba:</strong></p>
+                        <p>mandar codigos al postamn en txt user</p>
+                        <p>Usuario: <code>nombre.unico</code>, Contraseña: <code>miPasswordSegura</code></p>
                     </div>
                     
                 </form>

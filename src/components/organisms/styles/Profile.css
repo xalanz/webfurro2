@@ -1,0 +1,162 @@
+/* ==================================== */
+/* ESTILOS DEL PERFIL         */
+/* ==================================== */
+
+.profile-container {
+    max-width: 1000px;
+    margin: 3rem auto; /* Centrar y dar espacio vertical */
+    padding: 2rem;
+    background-color: #ffffff; /* Fondo blanco, limpio */
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(107, 163, 255, 0.1); /* Sombra suave del color principal */
+    display: grid;
+    gap: 3rem; /* Espacio entre secciones */
+}
+
+/* Encabezados */
+.profile-container h1 {
+    font-size: 2.8rem;
+    color: #6ba3ff; /* Color principal para el título */
+    margin-bottom: 0.5rem;
+    border-bottom: 2px solid #e6f7ff; /* Línea separadora sutil */
+    padding-bottom: 0.5rem;
+}
+
+.purchases-section h2 {
+    font-size: 2rem;
+    color: #333; /* Texto oscuro para el subtítulo */
+    margin-bottom: 1.5rem;
+    border-left: 5px solid #89cff0; /* Toque de color secundario */
+    padding-left: 10px;
+}
+
+/* Sección de Información del Usuario (Tarjeta) */
+.profile-info {
+    padding: 2rem;
+    background-color: #e6f7ff; /* Tono muy claro del azul para el fondo de la tarjeta */
+    border-radius: 10px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+}
+
+.profile-info p {
+    font-size: 1.1rem;
+    margin-bottom: 0.8rem;
+    color: #333;
+}
+
+.profile-info strong {
+    font-weight: bold;
+    color: #6ba3ff; /* Resaltar las etiquetas */
+    display: inline-block;
+    width: 100px; /* Alineación de dos columnas para etiquetas/valores */
+}
+
+/* ==================================== */
+/* ESTILOS DE LA TABLA        */
+/* ==================================== */
+
+.purchases-table {
+    width: 100%;
+    border-collapse: separate; /* Permite border-radius y espaciado */
+    border-spacing: 0;
+    margin-top: 1rem;
+    overflow: hidden; /* Asegura que border-radius funcione */
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+}
+
+.purchases-table thead {
+    background-color: #6ba3ff; /* Cabecera con color primario */
+    color: white;
+}
+
+.purchases-table th {
+    padding: 1rem;
+    text-align: left;
+    font-weight: 500;
+}
+
+.purchases-table td {
+    padding: 1rem;
+    border-bottom: 1px solid #c8e4ff; /* Borde de fila muy sutil */
+    background-color: white;
+}
+
+/* Alternar colores de fila para mejor lectura */
+.purchases-table tbody tr:nth-child(even) {
+    background-color: #f0f8ff; /* Tono aún más suave */
+}
+
+/* Efecto hover en filas */
+.purchases-table tbody tr:hover {
+    background-color: #d9eaff;
+    transition: background-color 0.3s;
+}
+
+/* Mensaje de no compras */
+.purchases-section p {
+    text-align: center;
+    font-style: italic;
+    color: #666;
+    padding: 2rem;
+    border: 1px dashed #89cff0;
+    border-radius: 8px;
+    background-color: #f9fcff;
+}
+
+/* Media Query para responsividad */
+@media (max-width: 768px) {
+    .profile-container {
+        margin: 1rem;
+        padding: 1rem;
+        gap: 2rem;
+    }
+
+    .profile-container h1 {
+        font-size: 2rem;
+    }
+
+    .purchases-table,
+    .purchases-table thead,
+    .purchases-table tbody,
+    .purchases-table th,
+    .purchases-table td,
+    .purchases-table tr {
+        display: block;
+    }
+
+    /* Ocultar encabezados en móvil */
+    .purchases-table thead tr {
+        position: absolute;
+        top: -9999px;
+        left: -9999px;
+    }
+
+    /* Hacer que las filas se vean como tarjetas */
+    .purchases-table tr {
+        border: 1px solid #c8e4ff;
+        margin-bottom: 1rem;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    }
+
+    .purchases-table td {
+        border: none;
+        position: relative;
+        padding-left: 50%; /* Espacio para la etiqueta */
+        text-align: right;
+    }
+
+    /* Mostrar etiquetas antes del contenido (simulando thead) */
+    .purchases-table td:before {
+        content: attr(data-label);
+        position: absolute;
+        left: 10px;
+        width: 45%;
+        padding-right: 10px;
+        white-space: nowrap;
+        text-align: left;
+        font-weight: bold;
+        color: #6ba3ff;
+    }
+}

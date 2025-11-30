@@ -1,0 +1,8 @@
+http://localhost:9090/api/auth/register
+
+{
+    "username": "nombre.unico",        
+    "useremail": "correo@ejemplo.com", 
+    "password": "miPasswordSegura",
+    "role": "USER"
+}

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import Header from '../organisms/Header'
 import Footer from '../organisms/Footer'
 import '../organisms/styles/App.css'
+import '../organisms/styles/Profile.css'
 
 export default function Profile() {
     const [user, setUser] = useState(null)

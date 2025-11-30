@@ -4,108 +4,6 @@ import ProductService from '../services/ProductService';
 // Imagen placeholder
 const imagenPlaceholder = 'https://via.placeholder.com/200x200?text=Producto';
 
-const productosFallback = [
-  { 
-    id: 'PAST001', 
-    nombre: 'Pastel de Chocolate', 
-    categoria: 'Pasteles', 
-    precio: 35000, 
-    imagen: imagenPlaceholder,
-    stock: true, 
-    enOferta: true, 
-    descuento: 15, 
-    calificacion: 5 
-  },
-  { 
-    id: 'PAST002', 
-    nombre: 'Cheesecake Fresco', 
-    categoria: 'Pasteles', 
-    precio: 32000, 
-    imagen: imagenPlaceholder,
-    stock: true, 
-    enOferta: false, 
-    descuento: 0, 
-    calificacion: 4 
-  },
-  { 
-    id: 'PAST003', 
-    nombre: 'Torta de Fresa', 
-    categoria: 'Pasteles', 
-    precio: 28000, 
-    imagen: imagenPlaceholder,
-    stock: true, 
-    enOferta: false, 
-    descuento: 0, 
-    calificacion: 5 
-  },
-  { 
-    id: 'CUPC001', 
-    nombre: 'muffins', 
-    categoria: 'muffins', 
-    precio: 18000, 
-    imagen: imagenPlaceholder,
-    stock: true, 
-    enOferta: true, 
-    descuento: 10, 
-    calificacion: 5 
-  },
-  { 
-    id: 'GALL001', 
-    nombre: 'Galletas Artesanales', 
-    categoria: 'Galletas', 
-    precio: 12000, 
-    imagen: imagenPlaceholder,
-    stock: true, 
-    enOferta: false, 
-    descuento: 0, 
-    calificacion: 4 
-  },
-  { 
-    id: 'PAST004', 
-    nombre: 'Tiramisú Italiano', 
-    categoria: 'Postres', 
-    precio: 25000, 
-    imagen: imagenPlaceholder,
-    stock: true, 
-    enOferta: true, 
-    descuento: 20, 
-    calificacion: 5 
-  },
-  { 
-    id: 'PAST005', 
-    nombre: 'Brownies Deluxe', 
-    categoria: 'Postres', 
-    precio: 15000, 
-    imagen: imagenPlaceholder,
-    stock: true, 
-    enOferta: false, 
-    descuento: 0, 
-    calificacion: 5 
-  },
-  { 
-    id: 'PAST006', 
-    nombre: 'Donuts Glaseados', 
-    categoria: 'Donuts',
-    precio: 16000, 
-    imagen: imagenPlaceholder,
-    stock: true, 
-    enOferta: false, 
-    descuento: 0, 
-    calificacion: 4 
-  },
-  { 
-    id: 'PAST007', 
-    nombre: 'Macarons Premium', 
-    categoria: 'Postres', 
-    precio: 22000, 
-    imagen: imagenPlaceholder,
-    stock: true, 
-    enOferta: true, 
-    descuento: 5, 
-    calificacion: 5 
-  }
-];
-
 const categorias = ['Todas', 'Pasteles', 'muffins', 'Galletas', 'Postres', 'Donuts'];
 
 function TiendaHuertoHogar() {
@@ -129,6 +27,28 @@ function TiendaHuertoHogar() {
     Discount: false,
     stars: 5
   });
+
+  // Helper: clave única para producto (prefiere id, si no usa nombre normalizado)
+  const keyOf = (p) => {
+    const id = p && (p.id || p._id || p.productId);
+    if (id !== undefined && id !== null && String(id) !== '') return `id:${String(id)}`;
+    const name = (p && (p.name || p.nombre) || '').toString().toLowerCase().trim();
+    return `name:${name}`;
+  };
+
+  // Merge sin duplicados: existing + incoming, incoming sobrescribe por la misma clave
+  const mergeProducts = (existing = [], incoming = []) => {
+    const map = new Map();
+    existing.forEach(p => {
+      const k = keyOf(p);
+      if (k) map.set(k, p);
+    });
+    incoming.forEach(p => {
+      const k = keyOf(p);
+      if (k) map.set(k, p); // incoming reemplaza si hay misma clave
+    });
+    return Array.from(map.values());
+  };
 
   // Enviar los productos de ejemplo al backend
   const seedProducts = async () => {
@@ -177,7 +97,7 @@ function TiendaHuertoHogar() {
       // Intentar refrescar la lista desde el backend
       try {
         const res = await ProductService.getProducts();
-        if (res && res.data) setProductos(res.data);
+        if (res && res.data) setProductos(prev => mergeProducts(prev, res.data));
       } catch (refreshErr) {
         console.log('No fue posible refrescar productos desde la API tras el seed:', refreshErr);
       }
@@ -217,15 +137,15 @@ function TiendaHuertoHogar() {
     ProductService.getProducts()
       .then(res => {
         if (res && res.data) {
-          // Si el backend retorna objetos con campos diferentes, puedes mapearlos aquí
-          setProductos(res.data);
+          // Merge para evitar duplicados
+          setProductos(prev => mergeProducts(prev, res.data));
         } else {
-          setProductos(productosFallback);
+          setProductos(prev => mergeProducts(prev, productosFallback));
         }
       })
       .catch(err => {
         console.log('No fue posible cargar productos desde la API:', err.message || err);
-        setProductos(productosFallback);
+        setProductos(prev => mergeProducts(prev, productosFallback));
       });
 
     // intentar recuperar carrito desde API
@@ -329,9 +249,9 @@ function TiendaHuertoHogar() {
     ProductService.createProduct(payload)
       .then(res => {
         console.log('Respuesta createProduct:', res && res.data ? res.data : res);
-        // Si el backend devuelve el objeto creado, lo añadimos al estado
+        // Si el backend devuelve el objeto creado, lo añadimos al estado (sin duplicar)
         const creado = (res && res.data) ? res.data : { ...payload, id: `local-${Date.now()}`, nombre: payload.name };
-        setProductos(prev => [creado, ...prev]);
+        setProductos(prev => mergeProducts(prev, [creado]));
         setMostrarForm(false);
         setApiStatus({ lastCount: null, lastError: null });
         alert('Producto creado correctamente en la API. Revisa con GET /api/products en Postman.');
@@ -346,7 +266,7 @@ function TiendaHuertoHogar() {
         setApiStatus(prev => ({ ...prev, lastError: err.response ? `${err.response.status} - ${JSON.stringify(err.response.data)}` : (err.message || String(err)) }));
         // Mantener comportamiento local pero informar claramente
         const creadoLocal = { ...payload, id: `local-${Date.now()}`, nombre: payload.name };
-        setProductos(prev => [creadoLocal, ...prev]);
+        setProductos(prev => mergeProducts(prev, [creadoLocal]));
         setMostrarForm(false);
         alert('No se pudo guardar en la API. El producto fue añadido localmente. Revisa la consola para más detalles.');
       });
@@ -356,7 +276,7 @@ function TiendaHuertoHogar() {
     ProductService.getProducts()
       .then(res => {
         if (res && res.data) {
-          setProductos(res.data);
+          setProductos(prev => mergeProducts(prev, res.data));
           setApiStatus({ lastCount: res.data.length, lastError: null });
           alert(`Refrescado desde API: ${res.data.length} productos obtenidos.`);
         } else {

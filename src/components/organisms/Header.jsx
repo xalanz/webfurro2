@@ -46,6 +46,7 @@ export default function Header() {
           <li><Link to="/Home" style={{ color: 'white', textDecoration: 'none', fontWeight: '500', fontSize: '1rem', transition: 'opacity 0.3s', cursor: 'pointer' }} onMouseEnter={e => e.target.style.opacity = '0.8'} onMouseLeave={e => e.target.style.opacity = '1'}>inicio</Link></li>
           <li><Link to="/Productos" style={{ color: 'white', textDecoration: 'none', fontWeight: '500', fontSize: '1rem', transition: 'opacity 0.3s', cursor: 'pointer' }} onMouseEnter={e => e.target.style.opacity = '0.8'} onMouseLeave={e => e.target.style.opacity = '1'}>Productos</Link></li>
           <li><Link to="/InformacioNostros" style={{ color: 'white', textDecoration: 'none', fontWeight: '500', fontSize: '1rem', transition: 'opacity 0.3s', cursor: 'pointer' }} onMouseEnter={e => e.target.style.opacity = '0.8'} onMouseLeave={e => e.target.style.opacity = '1'}>Nosotros</Link></li>
+          <li><Link to="/Profile" style={{ color: 'white', textDecoration: 'none', fontWeight: '500', fontSize: '1rem', transition: 'opacity 0.3s', cursor: 'pointer' }} onMouseEnter={e => e.target.style.opacity = '0.8'} onMouseLeave={e => e.target.style.opacity = '1'}>Perfil</Link></li>
         </ul>
 
         <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center' }}>

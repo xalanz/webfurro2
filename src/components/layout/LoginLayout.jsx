@@ -2,92 +2,125 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
 export default function LoginLayout() {
-	const [email, setEmail] = useState('');
-	const [password, setPassword] = useState('');
-	const navigate = useNavigate();
+    // ⭐ CAMBIO 1: Cambiar el estado de 'email' a 'username' para coincidir con el backend
+    const [username, setUsername] = useState('');
+    const [password, setPassword] = useState('');
+    const [error, setError] = useState(null); // Nuevo estado para manejar errores de API
+    const navigate = useNavigate();
+    
+    // Endpoint de login (puerto 9090)
+    const LOGIN_URL = 'http://localhost:9090/api/auth/login';
 
-	const handleSubmit = (e) => {
-		e.preventDefault();
-		
-		// Credenciales admin fijas (en producción usar backend)
-		const isAdmin = email === 'admin@duocuc.cl' && password === 'admin123';
-		
-		// Guardar en localStorage
-		localStorage.setItem('isAuthenticated', 'true');
-		localStorage.setItem('usuario', email);
-		localStorage.setItem('isAdmin', isAdmin ? 'true' : 'false');
-		
-		// Dispatchear evento para que otros componentes se actualicen
-		window.dispatchEvent(new Event('authChange'));
-		
-		console.log('Login exitoso:', { email, isAdmin });
-		
-		// Redirigir a home
-		navigate('/Home');
-	};
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setError(null); // Limpiar errores previos
 
-	return (
-		<div className="login-body">
-			<div className="login-container">
-				<div className="login-header">
-					<div className="login-logo">🧁 DulceLobito</div>
-					<h1 className="login-title">Bienvenido</h1>
-					<p className="login-subtitle">Inicia sesión en tu cuenta</p>
-				</div>
+        try {
+            const response = await fetch(LOGIN_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                // ⭐ CAMBIO 2: Enviar username y password al backend
+                body: JSON.stringify({ username, password }),
+            });
 
-				<form className="login-form" onSubmit={handleSubmit}>
-					<div className="login-form-group">
-						<label className="login-label" htmlFor="email">Correo Electrónico</label>
-						<input
-							type="email"
-							id="email"
-							className="login-input"
-							placeholder="tu@email.com"
-							value={email}
-							onChange={(e) => setEmail(e.target.value)}
-							required
-						/>
-					</div>
+            const data = await response.json();
 
-					<div className="login-form-group">
-						<label className="login-label" htmlFor="password">Contraseña</label>
-						<input
-							type="password"
-							id="password"
-							className="login-input"
-							placeholder="••••••••"
-							value={password}
-							onChange={(e) => setPassword(e.target.value)}
-							required
-						/>
-					</div>
+            if (response.ok) {
+                // ⭐ CAMBIO 3: Guardar el token, username y role en localStorage
+                localStorage.setItem('token', data.token);
+                localStorage.setItem('username', data.username);
+                localStorage.setItem('role', data.role);
+                
+                // Limpiar información de autenticación antigua (si existía)
+                localStorage.removeItem('isAuthenticated'); 
+                localStorage.removeItem('isAdmin');
 
-					<div className="login-checkbox-group">
-						<input type="checkbox" id="remember" className="login-checkbox" />
-						<label htmlFor="remember" className="login-checkbox-label">Recordarme</label>
-					</div>
+                // Disparar evento para que otros componentes se actualicen
+                window.dispatchEvent(new Event('authChange'));
+                
+                console.log('Login exitoso. Rol:', data.role);
+                
+                // Redirigir a home
+                navigate('/Home');
 
-					
+            } else {
+                // ⭐ CAMBIO 4: Manejar errores del backend (e.g., "Nombre de usuario o contraseña incorrectos")
+                const errorMessage = data.error || 'Credenciales inválidas o error de red.';
+                setError(errorMessage);
+                console.error('Fallo el login:', errorMessage);
+            }
+        } catch (err) {
+            setError('Error de conexión con el servidor. Intente más tarde.');
+            console.error('Error de fetch:', err);
+        }
+    };
 
-					<button type="submit" className="login-button">Iniciar Sesión</button>
-					
-					<div style={{ marginTop: '1rem', padding: '0.8rem', backgroundColor: '#f0f8ff', borderRadius: '4px', fontSize: '0.85rem', color: '#333' }}>
-						<p><strong>Demo Admin:</strong></p>
-						<p>Email: <code>admin@duocuc.cl</code></p>
-						<p>Contraseña: <code>admin123</code></p>
-					</div>
+    return (
+        <div className="login-body">
+            <div className="login-container">
+                <div className="login-header">
+                    <div className="login-logo">🧁 DulceLobito</div>
+                    <h1 className="login-title">Bienvenido</h1>
+                    <p className="login-subtitle">Inicia sesión en tu cuenta</p>
+                </div>
+
+                <form className="login-form" onSubmit={handleSubmit}>
+                    {/* Mostrar mensaje de error de API */}
+                    {error && <p style={{ color: 'red', marginBottom: '1rem', fontWeight: 'bold' }}>{error}</p>}
                     
-				</form>
+                    <div className="login-form-group">
+                        {/* ⭐ CAMBIO 5: Cambiar etiqueta para Nombre de Usuario */}
+                        <label className="login-label" htmlFor="username">Nombre de Usuario</label>
+                        <input
+                            type="text" // Cambiado de 'email' a 'text'
+                            id="username" // Cambiado de 'email' a 'username'
+                            className="login-input"
+                            placeholder="tu_usuario_unico"
+                            value={username}
+                            onChange={(e) => setUsername(e.target.value)}
+                            required
+                        />
+                    </div>
 
-				<div className="login-divider">o</div>
+                    <div className="login-form-group">
+                        <label className="login-label" htmlFor="password">Contraseña</label>
+                        <input
+                            type="password"
+                            id="password"
+                            className="login-input"
+                            placeholder="••••••••"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            required
+                        />
+                    </div>
 
-				<div className="login-footer">
-					<p style={{ color: '#666' }}>
-						¿No tienes cuenta?{' '}
-						<Link to="/registro" className="login-link">Regístrate aquí</Link>
-					</p>
-				</div>
-			</div>
-		</div>
-	);
+                    <div className="login-checkbox-group">
+                        <input type="checkbox" id="remember" className="login-checkbox" />
+                        <label htmlFor="remember" className="login-checkbox-label">Recordarme</label>
+                    </div>
+
+                    <button type="submit" className="login-button">Iniciar Sesión</button>
+                    
+                    <div style={{ marginTop: '1rem', padding: '0.8rem', backgroundColor: '#f0f8ff', borderRadius: '4px', fontSize: '0.85rem', color: '#333' }}>
+                        <p><strong>Recuerda:</strong></p>
+                        <p>Debes registrar el usuario en Postman antes de iniciar sesión aquí.</p>
+                        <p>Ejemplo: Usuario: <code>nombre.unico</code>, Contraseña: <code>miPasswordSegura</code></p>
+                    </div>
+                    
+                </form>
+
+                <div className="login-divider">o</div>
+
+                <div className="login-footer">
+                    <p style={{ color: '#666' }}>
+                        ¿No tienes cuenta?{' '}
+                        <Link to="/registro" className="login-link">Regístrate aquí</Link>
+                    </p>
+                </div>
+            </div>
+        </div>
+    );
 }

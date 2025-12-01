@@ -1,0 +1,118 @@
+/* --- Paleta de Colores de Pastelería --- */
+:root {
+  /* Tonos principales (marrones, beige) */
+  --color-primario: #8B4513; /* Marrón (SaddleBrown) */
+  --color-primario-claro: #D2B48C; /* Beige (Tan) */
+  --color-fondo: #FDF8F0; /* Un blanco crema muy suave */
+  --color-texto: #4E342E; /* Marrón oscuro para texto */
+  --color-texto-secundario: #795548; /* Marrón más claro */
+  
+  /* Tonos de acento (para botones, ofertas) */
+  --color-acento-rosa: #E8A0B9; /* Rosa pastel */
+  --color-exito: #28a745;         /* Verde para "Añadir" (como en tu imagen) */
+  --color-exito-hover: #218838;
+  --color-badge-oferta: #F39C12; /* Amarillo/Dorado para estrellas y tags */
+  
+  /* Colores neutros */
+  --color-blanco: #FFFFFF;
+  --color-gris-claro: #f4f4f4;
+  --color-bordes: #e0e0e0;
+}
+
+/* --- Reseteo Básico y Estilos Globales --- */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Arial', sans-serif; /* Puedes cambiar esta fuente */
+  background-color: var(--color-fondo);
+  color: var(--color-texto);
+  line-height: 1.6;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Georgia', serif; /* Una fuente con serifa para títulos */
+  color: var(--color-primario);
+  margin-bottom: 1rem;
+}
+
+button {
+  cursor: pointer;
+  font-family: 'Arial', sans-serif;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+/* Colores de Lobito Pastelero */
+:root {
+    --color-celeste: #87CEEB;
+}
+
+.text-celeste {
+    color: var(--color-celeste) !important;
+}
+
+.bg-light-celeste {
+    background-color: #f0f8ff !important;
+}
+
+.btn-celeste {
+    background-color: var(--color-celeste);
+    color: white;
+    border: none;
+}
+
+.btn-celeste:hover {
+    background-color: #5bbce4;
+    color: white;
+}
+
+/* Flechas del Carrusel */
+.text-celeste-arrow {
+    color: var(--color-celeste);
+}
+
+/* Mantiene el slider con buena altura */
+.carousel-item {
+    min-height: 500px;
+}
+
+.img-carrusel {
+    width: 100%;            /* Ocupa todo el ancho disponible */
+    height: 450px;          /* Altura FIJA para todas (puedes ajustar este número) */
+    object-fit: cover;      /* IMPORTANTE: Esto evita que la imagen se estire o aplaste */
+    object-position: center;/* Mantiene el centro de la foto visible */
+}
+
+/* Ajuste para pantallas pequeñas (móviles) */
+@media (max-width: 768px) {
+    .img-carrusel {
+        height: 300px; /* En celular las hacemos un poco más bajas */
+    }
+}
+
+/* Color celeste para las flechas */
+.text-celeste { color: #87CEEB !important; }
+
+/* Flechas grandes y celestes */
+.text-celeste-arrow {
+    color: #87CEEB !important; 
+    transition: 0.3s;
+}
+.text-celeste-arrow:hover {
+    color: #5bbce4 !important;
+}
+
+/* Indicadores de abajo en celeste */
+.carousel-indicators li.active {
+    background-color: #87CEEB !important;
+}
+.carousel-indicators li {
+    background-color: #ccc; /* gris cuando no está activo */
+}

@@ -18,14 +18,10 @@ export default function Profile() {
         try {
             const token = localStorage.getItem('token')
 
-            // ⭐ CORRECCIÓN CLAVE 1: Verificar si el token existe
             if (!token) {
-                // Si no hay token, no podemos hacer la solicitud. 
-                // Esto podría ser un punto para redirigir al usuario al login.
-                throw new Error('No se encontró el token de sesión. Inicie sesión.');
+                throw new Error('No se encontró el token de sesión. Inicie sesión.')
             }
 
-            // La URL está correcta: apunta al endpoint de perfil autenticado.
             const response = await fetch('http://localhost:9090/api/users/profile', {
                 headers: {
                     'Authorization': `Bearer ${token}`
@@ -33,31 +29,23 @@ export default function Profile() {
             })
             
             if (!response.ok) {
-                // Si la respuesta no es OK (ej. 401 Unauthorized), 
-                // leemos el error del cuerpo si es JSON.
-                let errorMessage = 'Error al obtener el perfil.';
+                let errorMessage = 'Error al obtener el perfil.'
                 try {
-                    const errorData = await response.json();
+                    const errorData = await response.json()
                     if (response.status === 401 || response.status === 403) {
-                        errorMessage = 'Sesión expirada o no autorizada. Vuelva a iniciar sesión.';
+                        errorMessage = 'Sesión expirada o no autorizada. Vuelva a iniciar sesión.'
                     } else if (errorData.error) {
-                         errorMessage = errorData.error;
+                         errorMessage = errorData.error
                     }
                 } catch (e) {
-                    // Si no es JSON, usamos el estado HTTP
-                    errorMessage += ` (Estado HTTP: ${response.status})`;
+                    errorMessage += ` (Estado HTTP: ${response.status})`
                 }
                 
-                throw new Error(errorMessage);
+                throw new Error(errorMessage)
             }
             
             const userData = await response.json()
-            
-            // Los datos del backend son: {id, username, email, role}.
             setUser(userData)
-            
-            // El backend no devuelve 'purchases', por lo que mantenemos el fallback a []
-            // Si implementas 'purchases', deberás hacer otra llamada API o modificar el backend.
             setPurchases(userData.purchases || []) 
             
         } catch (err) {
@@ -67,46 +55,115 @@ export default function Profile() {
         }
     }
 
-    // Nuevo: handler para cerrar sesión
     const handleLogout = () => {
         const ok = window.confirm('¿Deseas cerrar la sesión?')
         if (!ok) return
 
-        // Limpiar token y cualquier otro dato de sesión/local
         localStorage.removeItem('token')
-        // Si guardas otros datos de sesión, límpialos también:
-        // localStorage.removeItem('user')
         setUser(null)
         setPurchases([])
-
-        // Redirigir al login o a la página principal
         window.location.href = '/login'
     }
 
-    if (loading) return <div>Cargando...</div>
-    if (error) return <div>Error: {error}</div>
+    if (loading) {
+        return (
+            <>
+                <Header />
+                <div className="profile-container">
+                    <div className="loading-state">
+                        <span style={{ fontSize: '3rem' }}>⏳</span>
+                        <span>Cargando perfil...</span>
+                    </div>
+                </div>
+                <Footer />
+            </>
+        )
+    }
+
+    if (error) {
+        return (
+            <>
+                <Header />
+                <div className="profile-container">
+                    <div className="error-state">
+                        <h2>⚠️ Error</h2>
+                        <p>{error}</p>
+                        <button onClick={() => window.location.href = '/login'}>
+                            Ir al Login
+                        </button>
+                    </div>
+                </div>
+                <Footer />
+            </>
+        )
+    }
     
-    // ⭐ CORRECCIÓN CLAVE 2: Si el fetch fue exitoso pero user es null (por algún error lógico), 
-    // mostramos un mensaje para evitar errores de renderizado.
-    if (!user) return <div>No se pudo cargar la información del perfil.</div>
+    if (!user) {
+        return (
+            <>
+                <Header />
+                <div className="profile-container">
+                    <div className="error-state">
+                        <h2> Error</h2>
+                        <p>No se pudo cargar la información del perfil.</p>
+                    </div>
+                </div>
+                <Footer />
+            </>
+        )
+    }
 
     return (
         <>
             <Header />
             <div className="profile-container">
-                <div className="profile-info">
-                    <h1>Perfil de Usuario</h1>
-                    {/* Botón para cerrar sesión */}
-                    <button className="logout-button" onClick={handleLogout}>Cerrar sesión</button>
+                <div className="profile-header">
+                    <div className="profile-banner"></div>
+                    
+                    <button className="logout-button" onClick={handleLogout}>
+                        <span></span>
+                        <span>Cerrar sesión</span>
+                    </button>
+                    
+                    <div className="profile-content">
+                        <div className="profile-avatar">
+                            <img 
+                                src="" 
+                                alt={user.username}
+                            />
+                        </div>
+                        
+                        <div className="profile-info-header">
+                            <h1>{user.username}</h1>
+                            <span className="profile-role-badge">
+                                🎭 {user.role}
+                            </span>
+                        </div>
 
-                    {/* El backend devuelve 'username' y 'role', por lo que esto funciona */}
-                    <p><strong>Usuario:</strong> {user.username}</p>
-                    <p><strong>Email:</strong> {user.email}</p> 
-                    <p><strong>Rol:</strong> {user.role}</p>
+                        <div className="profile-details-grid">
+                            <div className="profile-detail-card">
+                                <span className="icon">👤</span>
+                                <strong>Nombre de Usuario</strong>
+                                <div className="value">{user.username}</div>
+                            </div>
+
+                            <div className="profile-detail-card">
+                                <span className="icon">📧</span>
+                                <strong>Correo Electrónico</strong>
+                                <div className="value">{user.email}</div>
+                            </div>
+
+                            <div className="profile-detail-card">
+                                <span className="icon">🆔</span>
+                                <strong>ID de Usuario</strong>
+                                <div className="value">#{user.id}</div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <div className="purchases-section">
-                    <h2>Mis Compras</h2>
+                    <h2>Historial de Compras</h2>
                     {purchases.length > 0 ? (
                         <table className="purchases-table">
                             <thead>
@@ -120,16 +177,25 @@ export default function Profile() {
                             <tbody>
                                 {purchases.map(purchase => (
                                     <tr key={purchase.id}>
-                                        <td>{purchase.id}</td>
-                                        <td>{purchase.productName}</td>
-                                        <td>${purchase.price}</td>
-                                        <td>{new Date(purchase.date).toLocaleDateString()}</td>
+                                        <td data-label="ID">#{purchase.id}</td>
+                                        <td data-label="Producto">{purchase.productName}</td>
+                                        <td data-label="Precio">${purchase.price.toLocaleString()}</td>
+                                        <td data-label="Fecha">
+                                            {new Date(purchase.date).toLocaleDateString('es-ES', {
+                                                year: 'numeric',
+                                                month: 'long',
+                                                day: 'numeric'
+                                            })}
+                                        </td>
                                     </tr>
                                 ))}
                             </tbody>
                         </table>
                     ) : (
-                        <p>No hay compras registradas</p>
+                        <div className="no-purchases">
+                            <span className="no-purchases-icon">📦</span>
+                            <p>No hay compras registradas todavía</p>
+                        </div>
                     )}
                 </div>
             </div>

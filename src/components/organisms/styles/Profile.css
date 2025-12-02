@@ -1,162 +1,472 @@
 /* ==================================== */
-/* ESTILOS DEL PERFIL         */
+/* ESTILOS MODERNOS DEL PERFIL        */
 /* ==================================== */
 
 .profile-container {
-    max-width: 1000px;
-    margin: 3rem auto; /* Centrar y dar espacio vertical */
-    padding: 2rem;
-    background-color: #ffffff; /* Fondo blanco, limpio */
-    border-radius: 15px;
-    box-shadow: 0 10px 30px rgba(107, 163, 255, 0.1); /* Sombra suave del color principal */
-    display: grid;
-    gap: 3rem; /* Espacio entre secciones */
+    max-width: 1400px;
+    margin: 2rem auto;
+    padding: 0 2rem;
+    animation: fadeIn 0.6s ease-out;
 }
 
-/* Encabezados */
-.profile-container h1 {
-    font-size: 2.8rem;
-    color: #6ba3ff; /* Color principal para el título */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ==================================== */
+/* HEADER DEL PERFIL CON BANNER        */
+/* ==================================== */
+
+.profile-header {
+    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #d946ef 100%);
+    border-radius: 24px;
+    padding: 0;
+    margin-bottom: 2rem;
+    box-shadow: 0 20px 60px rgba(99, 102, 241, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+.profile-banner {
+    height: 200px;
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.3) 0%, rgba(139, 92, 246, 0.3) 100%);
+    position: relative;
+    overflow: hidden;
+}
+
+.profile-banner::before {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: 
+        radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
+    animation: float 20s infinite ease-in-out;
+}
+
+@keyframes float {
+    0%, 100% { transform: translate(0, 0); }
+    50% { transform: translate(20px, -20px); }
+}
+
+.profile-content {
+    padding: 0 3rem 3rem;
+    position: relative;
+    margin-top: -80px;
+}
+
+.profile-avatar {
+    width: 120px;
+    height: 120px;
+    background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3.5rem;
+    border: 6px solid white;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    margin-bottom: 1.5rem;
+}
+
+.profile-info-header {
+    margin-bottom: 2.5rem;
+}
+
+.profile-info-header h1 {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: white;
     margin-bottom: 0.5rem;
-    border-bottom: 2px solid #e6f7ff; /* Línea separadora sutil */
-    padding-bottom: 0.5rem;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.profile-role-badge {
+    display: inline-block;
+    background: rgba(255, 255, 255, 0.25);
+    backdrop-filter: blur(10px);
+    color: white;
+    padding: 0.5rem 1.25rem;
+    border-radius: 50px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+/* Botón de Cerrar Sesión */
+.logout-button {
+    position: absolute;
+    top: 2rem;
+    right: 2rem;
+    background: white;
+    color: #6366f1;
+    border: none;
+    padding: 0.875rem 1.75rem;
+    border-radius: 50px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1rem;
+}
+
+.logout-button:hover {
+    background: #f3f4f6;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+}
+
+.logout-button:active {
+    transform: translateY(0);
+}
+
+/* ==================================== */
+/* GRID DE INFORMACIÓN                 */
+/* ==================================== */
+
+.profile-details-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 1.5rem;
+    margin-top: 2rem;
+}
+
+.profile-detail-card {
+    background: white;
+    padding: 2rem;
+    border-radius: 20px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.profile-detail-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 35px rgba(99, 102, 241, 0.15);
+    border-color: #e0e7ff;
+}
+
+.profile-detail-card .icon {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    display: block;
+}
+
+.profile-detail-card strong {
+    display: block;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: #6b7280;
+    font-weight: 700;
+    margin-bottom: 0.75rem;
+}
+
+.profile-detail-card .value {
+    color: #1f2937;
+    font-weight: 600;
+    font-size: 1.25rem;
+    word-break: break-word;
+}
+
+/* ==================================== */
+/* SECCIÓN DE COMPRAS                  */
+/* ==================================== */
+
+.purchases-section {
+    background: white;
+    border-radius: 24px;
+    padding: 3rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    margin-top: 2rem;
 }
 
 .purchases-section h2 {
     font-size: 2rem;
-    color: #333; /* Texto oscuro para el subtítulo */
-    margin-bottom: 1.5rem;
-    border-left: 5px solid #89cff0; /* Toque de color secundario */
-    padding-left: 10px;
+    color: #1f2937;
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-weight: 800;
 }
 
-/* Sección de Información del Usuario (Tarjeta) */
-.profile-info {
-    padding: 2rem;
-    background-color: #e6f7ff; /* Tono muy claro del azul para el fondo de la tarjeta */
-    border-radius: 10px;
-    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+.purchases-section h2::before {
+    content: '🛍️';
+    font-size: 2rem;
 }
 
-.profile-info p {
-    font-size: 1.1rem;
-    margin-bottom: 0.8rem;
-    color: #333;
-}
-
-.profile-info strong {
-    font-weight: bold;
-    color: #6ba3ff; /* Resaltar las etiquetas */
-    display: inline-block;
-    width: 100px; /* Alineación de dos columnas para etiquetas/valores */
-}
-
-/* ==================================== */
-/* ESTILOS DE LA TABLA        */
-/* ==================================== */
-
+/* Tabla Moderna */
 .purchases-table {
     width: 100%;
-    border-collapse: separate; /* Permite border-radius y espaciado */
+    border-collapse: separate;
     border-spacing: 0;
-    margin-top: 1rem;
-    overflow: hidden; /* Asegura que border-radius funcione */
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-    border-radius: 8px;
+    overflow: hidden;
+    border-radius: 16px;
 }
 
 .purchases-table thead {
-    background-color: #6ba3ff; /* Cabecera con color primario */
-    color: white;
+    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
 }
 
-.purchases-table th {
-    padding: 1rem;
+.purchases-table thead th {
+    color: white;
+    padding: 1.25rem 1.5rem;
     text-align: left;
+    font-weight: 700;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+}
+
+.purchases-table thead th:first-child {
+    border-radius: 16px 0 0 0;
+}
+
+.purchases-table thead th:last-child {
+    border-radius: 0 16px 0 0;
+}
+
+.purchases-table tbody tr {
+    background: white;
+    transition: all 0.3s ease;
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.purchases-table tbody tr:hover {
+    background: #f9fafb;
+    transform: scale(1.01);
+}
+
+.purchases-table tbody tr:last-child {
+    border-bottom: none;
+}
+
+.purchases-table tbody td {
+    padding: 1.5rem 1.5rem;
+    color: #4b5563;
+    font-size: 1rem;
+}
+
+.purchases-table tbody td:first-child {
+    font-weight: 700;
+    color: #6366f1;
+    font-size: 1.1rem;
+}
+
+/* Mensaje sin compras */
+.no-purchases {
+    text-align: center;
+    padding: 5rem 2rem;
+    background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+    border-radius: 20px;
+    border: 2px dashed #d1d5db;
+}
+
+.no-purchases-icon {
+    font-size: 5rem;
+    margin-bottom: 1.5rem;
+    opacity: 0.5;
+    display: block;
+}
+
+.no-purchases p {
+    color: #6b7280;
+    font-size: 1.2rem;
+    margin: 0;
     font-weight: 500;
 }
 
-.purchases-table td {
-    padding: 1rem;
-    border-bottom: 1px solid #c8e4ff; /* Borde de fila muy sutil */
-    background-color: white;
+/* Estados de carga y error */
+.loading-state,
+.error-state {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 60vh;
+    flex-direction: column;
+    gap: 1rem;
 }
 
-/* Alternar colores de fila para mejor lectura */
-.purchases-table tbody tr:nth-child(even) {
-    background-color: #f0f8ff; /* Tono aún más suave */
+.loading-state {
+    font-size: 1.5rem;
+    color: #6366f1;
 }
 
-/* Efecto hover en filas */
-.purchases-table tbody tr:hover {
-    background-color: #d9eaff;
-    transition: background-color 0.3s;
-}
-
-/* Mensaje de no compras */
-.purchases-section p {
+.error-state {
+    background: linear-gradient(135deg, #fee 0%, #fdd 100%);
+    padding: 3rem;
+    border-radius: 20px;
     text-align: center;
-    font-style: italic;
-    color: #666;
-    padding: 2rem;
-    border: 1px dashed #89cff0;
-    border-radius: 8px;
-    background-color: #f9fcff;
+    max-width: 500px;
+    margin: 2rem auto;
+    box-shadow: 0 10px 30px rgba(220, 38, 38, 0.2);
 }
 
-/* Media Query para responsividad */
+.error-state h2 {
+    color: #dc2626;
+    margin-bottom: 1rem;
+    font-size: 1.75rem;
+}
+
+.error-state p {
+    color: #991b1b;
+    margin-bottom: 1.5rem;
+}
+
+.error-state button {
+    padding: 0.875rem 2.5rem;
+    background: #6366f1;
+    color: white;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    font-weight: 700;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.error-state button:hover {
+    background: #4f46e5;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+}
+
+/* ==================================== */
+/* RESPONSIVIDAD                       */
+/* ==================================== */
+
+@media (max-width: 1024px) {
+    .profile-details-grid {
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    }
+}
+
 @media (max-width: 768px) {
     .profile-container {
-        margin: 1rem;
-        padding: 1rem;
-        gap: 2rem;
+        padding: 0 1rem;
+        margin: 1rem auto;
     }
 
-    .profile-container h1 {
-        font-size: 2rem;
+    .profile-header {
+        border-radius: 16px;
     }
 
-    .purchases-table,
-    .purchases-table thead,
+    .profile-banner {
+        height: 150px;
+    }
+
+    .profile-content {
+        padding: 0 1.5rem 2rem;
+        margin-top: -60px;
+    }
+
+    .profile-avatar {
+        width: 100px;
+        height: 100px;
+        font-size: 3rem;
+    }
+
+    .profile-info-header h1 {
+        font-size: 1.75rem;
+    }
+
+    .logout-button {
+        top: 1rem;
+        right: 1rem;
+        padding: 0.75rem 1.25rem;
+        font-size: 0.9rem;
+    }
+
+    .profile-details-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .purchases-section {
+        padding: 1.5rem;
+        border-radius: 16px;
+    }
+
+    .purchases-section h2 {
+        font-size: 1.5rem;
+    }
+
+    /* Tabla responsiva */
+    .purchases-table {
+        display: block;
+        overflow-x: auto;
+    }
+
+    .purchases-table thead {
+        display: none;
+    }
+
     .purchases-table tbody,
-    .purchases-table th,
-    .purchases-table td,
-    .purchases-table tr {
+    .purchases-table tr,
+    .purchases-table td {
         display: block;
     }
 
-    /* Ocultar encabezados en móvil */
-    .purchases-table thead tr {
-        position: absolute;
-        top: -9999px;
-        left: -9999px;
+    .purchases-table tbody tr {
+        margin-bottom: 1.5rem;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        border: 2px solid #f3f4f6;
     }
 
-    /* Hacer que las filas se vean como tarjetas */
-    .purchases-table tr {
-        border: 1px solid #c8e4ff;
-        margin-bottom: 1rem;
-        border-radius: 8px;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    .purchases-table tbody td {
+        display: flex;
+        justify-content: space-between;
+        padding: 1rem 1.5rem;
+        border-bottom: 1px solid #f3f4f6;
     }
 
-    .purchases-table td {
-        border: none;
-        position: relative;
-        padding-left: 50%; /* Espacio para la etiqueta */
-        text-align: right;
+    .purchases-table tbody td:last-child {
+        border-bottom: none;
     }
 
-    /* Mostrar etiquetas antes del contenido (simulando thead) */
-    .purchases-table td:before {
+    .purchases-table tbody td::before {
         content: attr(data-label);
-        position: absolute;
-        left: 10px;
-        width: 45%;
-        padding-right: 10px;
-        white-space: nowrap;
-        text-align: left;
-        font-weight: bold;
-        color: #6ba3ff;
+        font-weight: 700;
+        color: #6366f1;
+        text-transform: uppercase;
+        font-size: 0.8rem;
+        letter-spacing: 0.5px;
+    }
+
+    .no-purchases {
+        padding: 3rem 1.5rem;
+    }
+
+    .no-purchases-icon {
+        font-size: 4rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .profile-info-header h1 {
+        font-size: 1.5rem;
+    }
+
+    .profile-detail-card {
+        padding: 1.5rem;
+    }
+
+    .purchases-section h2 {
+        font-size: 1.3rem;
     }
 }

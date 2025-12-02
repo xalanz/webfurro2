@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import Header from '../organisms/Header'
 import Footer from '../organisms/Footer'
+import keznit from '../organisms/img/keznit.jpg'
 import '../organisms/styles/App.css'
 import '../organisms/styles/Profile.css'
 
@@ -128,7 +129,7 @@ export default function Profile() {
                     <div className="profile-content">
                         <div className="profile-avatar">
                             <img 
-                                src="" 
+                                src={keznit} 
                                 alt={user.username}
                             />
                         </div>

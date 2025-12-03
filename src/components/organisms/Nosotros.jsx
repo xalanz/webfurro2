@@ -1,12 +1,10 @@
 import '../organisms/styles/Informacion.css';
 import 'bootstrap/dist/css/bootstrap.min.css'; 
 
-
 function Nosotros() {
   return (
     <>
     <div>
-      
       <div className="backgroundimage">
         <div className="container nosotros-page">
           <header className="text-center mb-5">
@@ -33,12 +31,11 @@ function Nosotros() {
                       Luis Paredes
                     </h4>
                     <p className="card-subtitle mb-2 text-muted">
-                      Experto en Logística y Operaciones Automatizadas
+                      Maestro Pastelero y Decorador
                     </p>
-                    <span className="badge bg-success mb-3">Factorio</span>
+                    <span className="badge bg-success mb-3">Especialidad: Tortas de Chocolate</span>
                     <p className="card-text text-start">
-                      Con más de 10 años de experiencia en optimización de cadenas de suministro, 
-                      Luis lidera nuestra operación logística asegurando entregas rápidas y eficientes.
+                      Luis es el encargado de crear y decorar nuestras tortas más emblemáticas. Su creatividad y precisión hacen que cada pastel sea una obra de arte.
                     </p>
                   </div>
                 </div>
@@ -55,18 +52,17 @@ function Nosotros() {
                       Camilo Araneda
                     </h4>
                     <p className="card-subtitle mb-2 text-muted">
-                      Experto en Agricultura y Calidad de Productos Orgánicos
+                      Experto en Panadería y Masas
                     </p>
-                    <span className="badge bg-success mb-3">Stardew Valley</span>
+                    <span className="badge bg-success mb-3">Especialidad: Croissants</span>
                     <p className="card-text text-start">
-                      Ingeniero agrónomo especializado en cultivos orgánicos. Camilo supervisa 
-                      personalmente la calidad de todos nuestros productos desde la cosecha.
+                      Camilo domina la técnica de las masas y horneados perfectos. Gracias a él, nuestros panes y croissants siempre llegan frescos y crujientes.
                     </p>
                   </div>
                 </div>
               </div>
 
-              {/* MIEMBRO 3 - NUEVO */}
+              {/* MIEMBRO 3 */}
               <div className="col-md-6 col-lg-4">
                 <div className="card shadow-sm team-card">
                   <div className="card-body text-center">
@@ -77,12 +73,11 @@ function Nosotros() {
                       Alan Thomas 
                     </h4>
                     <p className="card-subtitle mb-2 text-muted">
-                      Especialista en Sostenibilidad y Desarrollo Comunitario
+                      Encargado de Atención al Cliente y Ventas
                     </p>
-                    <span className="badge bg-success mb-3">Viva el Lol</span>
+                    <span className="badge bg-success mb-3">Especialidad: Servicio Personalizado</span>
                     <p className="card-text text-start">
-                      aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
-                      aaaaaaaaaaaaaaaaaaaaaaaa
+                      Alan se asegura de que cada cliente reciba una atención cálida y personalizada, recomendando los productos ideales para cada ocasión.
                     </p>
                   </div>
                 </div>
@@ -142,8 +137,6 @@ function Nosotros() {
         </div>
       </div>
       </div>
-      
-    
     </>
   );
 }

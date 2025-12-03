@@ -106,8 +106,8 @@ export default function LoginLayout() {
                     
                     <div style={{ marginTop: '1rem', padding: '0.8rem', backgroundColor: '#f0f8ff', borderRadius: '4px', fontSize: '0.85rem', color: '#333' }}>
                         <p><strong>prueba:</strong></p>
-                        <p>mandar codigos al postamn en txt user</p>
-                        <p>Usuario: <code>nombre.unico</code>, Contraseña: <code>miPasswordSegura</code></p>
+                        <p>user cargado al inciar backend </p>
+                        <p>Usuario: <code>user_user</code>, Contraseña: <code>password</code></p>
                     </div>
                     
                 </form>

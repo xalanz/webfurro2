@@ -26,7 +26,7 @@ export default function Categories() {
             <div className="col-12 col-md-4 p-5 mt-3">
                 <a href="#">
                     <img 
-                        src="https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=400&q=80" 
+                        src="https://www.handmadecharlotte.com/wp-content/uploads/2014/01/1-diy-fox-cake.jpg" 
                         className="rounded-circle img-fluid border" 
                         style={imgStyle}
                         alt="Tortas" 
@@ -42,7 +42,7 @@ export default function Categories() {
             <div className="col-12 col-md-4 p-5 mt-3">
                 <a href="#">
                     <img 
-                        src="https://images.unsplash.com/photo-1587668178277-295251f900ce?auto=format&fit=crop&w=400&q=80" 
+                        src="https://www.savvysavingcouple.net/wp-content/uploads/2019/02/Light-Furry-cupcake-1.jpg.webp" 
                         className="rounded-circle img-fluid border" 
                         style={imgStyle}
                         alt="Cupcakes" 
@@ -58,7 +58,7 @@ export default function Categories() {
             <div className="col-12 col-md-4 p-5 mt-3">
                 <a href="#">
                     <img 
-                        src="https://images.unsplash.com/photo-1558961363-fa8fdf82db35?auto=format&fit=crop&w=400&q=80" 
+                        src="https://customcookies.com/cdn/shop/files/DogFootStepCookie_Main_600x.jpg?v=1693573722" 
                         className="rounded-circle img-fluid border" 
                         style={imgStyle}
                         alt="Galletas" 

@@ -1,0 +1,102 @@
+/* --- Estilos para la Sección de Contacto (Contact.jsx) --- */
+
+/* La paleta de colores debe estar definida en algún archivo global,
+   pero para que este código sea autocontenido, se definen aquí los principales. */
+:root {
+    --color-primario: #8B4513;        /* Marrón (SaddleBrown) */
+    --color-primario-claro: #D2B48C;  /* Beige (Tan) */
+    --color-fondo: #FDF8F0;           /* Blanco crema muy suave */
+    --color-texto: #4E342E;           /* Marrón oscuro para texto */
+    --color-acento-rosa: #E8A0B9;     /* Rosa pastel */
+    --color-blanco: #FFFFFF;
+    --color-bordes: #e0e0e0;
+}
+
+.contacto {
+    padding: 60px 20px;
+    background-color: var(--color-fondo);
+    text-align: center;
+}
+
+.contacto h2 {
+    color: var(--color-primario);
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+    border-bottom: 3px solid var(--color-acento-rosa);
+    display: inline-block;
+    padding-bottom: 5px;
+}
+
+.contacto p {
+    color: var(--color-texto);
+    font-size: 1.1rem;
+    margin-bottom: 30px;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* Contenedor de la Información de Contacto */
+.contacto-info {
+    display: grid;
+    /* 2 columnas en desktop, centradas */
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 25px;
+    margin-top: 30px;
+    padding: 20px 0;
+}
+
+.contacto-item {
+    background-color: var(--color-blanco);
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(139, 69, 19, 0.1); /* Sombra suave con el primario */
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+}
+
+.contacto-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 15px rgba(139, 69, 19, 0.15);
+}
+
+.contacto-item strong {
+    color: var(--color-primario); /* Marrón para el título del medio */
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+    display: block;
+}
+
+.contacto-item a {
+    color: var(--color-acento-rosa); /* Rosa pastel como acento */
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1.1rem;
+    transition: color 0.3s ease;
+    word-wrap: break-word; /* Para URLs largas como la de Maps */
+}
+
+.contacto-item a:hover {
+    color: var(--color-primario); /* Cambia a marrón al pasar el ratón */
+    text-decoration: underline;
+}
+
+/* Ajustes Responsivos para Móviles */
+@media (max-width: 768px) {
+    .contacto {
+        padding: 40px 15px;
+    }
+    
+    /* En móviles, se mantiene la estructura grid pero en una sola columna si es necesario */
+    .contacto-info {
+        grid-template-columns: 1fr;
+    }
+    
+    .contacto h2 {
+        font-size: 2rem;
+    }
+}

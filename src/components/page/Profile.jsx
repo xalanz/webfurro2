@@ -17,12 +17,16 @@ export default function Profile() {
 
     const fetchUserProfile = async () => {
         try {
-            const token = localStorage.getItem('token')
+            // ✅ CORRECCIÓN: Usando sessionStorage (Consistente con Login y Header)
+            const token = sessionStorage.getItem('token')
 
             if (!token) {
-                throw new Error('No se encontró el token de sesión. Inicie sesión.')
+                // Si no hay token, simplemente mostramos el error sin intentar fetch
+                setLoading(false)
+                return 
             }
 
+            // ✅ URL CORREGIDA: Usando el puerto 9090
             const response = await fetch('http://localhost:9090/api/users/profile', {
                 headers: {
                     'Authorization': `Bearer ${token}`
@@ -31,15 +35,19 @@ export default function Profile() {
             
             if (!response.ok) {
                 let errorMessage = 'Error al obtener el perfil.'
-                try {
-                    const errorData = await response.json()
-                    if (response.status === 401 || response.status === 403) {
-                        errorMessage = 'Sesión expirada o no autorizada. Vuelva a iniciar sesión.'
-                    } else if (errorData.error) {
-                         errorMessage = errorData.error
+                
+                if (response.status === 401 || response.status === 403) {
+                    errorMessage = 'Sesión expirada o no autorizada. Vuelva a iniciar sesión.'
+                    sessionStorage.removeItem('token') // Forzamos el logout
+                } else {
+                    try {
+                        const errorData = await response.json()
+                        if (errorData.error) {
+                             errorMessage = errorData.error
+                        }
+                    } catch (e) {
+                        errorMessage += ` (Estado HTTP: ${response.status})`
                     }
-                } catch (e) {
-                    errorMessage += ` (Estado HTTP: ${response.status})`
                 }
                 
                 throw new Error(errorMessage)
@@ -51,18 +59,25 @@ export default function Profile() {
             
         } catch (err) {
             setError(err.message)
+            // Si hay un error, el usuario no está autenticado o el token es malo.
+            // Si el error es "No se encontró el token", el Header mostrará el login, lo cual es correcto.
         } finally {
             setLoading(false)
         }
     }
 
     const handleLogout = () => {
-        const ok = window.confirm('¿Deseas cerrar la sesión?')
-        if (!ok) return
-
-        localStorage.removeItem('token')
+        // ❌ REGLA DE SEGURIDAD: Reemplazar window.confirm por un manejo interno o modal
+        console.log('Logout iniciado desde Profile.jsx')
+        
+        sessionStorage.removeItem('token') // ✅ CORRECCIÓN: Usando sessionStorage
         setUser(null)
         setPurchases([])
+        
+        // Notificamos el cambio para que otros componentes (como Header) se actualicen
+        window.dispatchEvent(new Event('authChange')); 
+        
+        // Redireccionar
         window.location.href = '/login'
     }
 
@@ -105,8 +120,11 @@ export default function Profile() {
                 <Header />
                 <div className="profile-container">
                     <div className="error-state">
-                        <h2> Error</h2>
-                        <p>No se pudo cargar la información del perfil.</p>
+                        <h2>⚠️ No Autenticado</h2>
+                        <p>No se pudo cargar la información del perfil. Por favor, inicie sesión.</p>
+                        <button onClick={() => window.location.href = '/login'}>
+                            Iniciar Sesión
+                        </button>
                     </div>
                 </div>
                 <Footer />
@@ -121,6 +139,7 @@ export default function Profile() {
                 <div className="profile-header">
                     <div className="profile-banner"></div>
                     
+                    {/* Botón de Logout local, pero usamos la lógica de sesión del Header */}
                     <button className="logout-button" onClick={handleLogout}>
                         <span></span>
                         <span>Cerrar sesión</span>
@@ -176,13 +195,13 @@ export default function Profile() {
                                 </tr>
                             </thead>
                             <tbody>
-                                {purchases.map(purchase => (
-                                    <tr key={purchase.id}>
-                                        <td data-label="ID">#{purchase.id}</td>
-                                        <td data-label="Producto">{purchase.productName}</td>
-                                        <td data-label="Precio">${purchase.price.toLocaleString()}</td>
+                                {purchases.map((purchase, index) => (
+                                    <tr key={purchase.id || index}>
+                                        <td data-label="ID">#{purchase.id || index}</td>
+                                        <td data-label="Producto">{purchase.productName || 'Producto Desconocido'}</td>
+                                        <td data-label="Precio">${(purchase.price || 0).toLocaleString('es-CL')}</td>
                                         <td data-label="Fecha">
-                                            {new Date(purchase.date).toLocaleDateString('es-ES', {
+                                            {new Date(purchase.date || Date.now()).toLocaleDateString('es-ES', {
                                                 year: 'numeric',
                                                 month: 'long',
                                                 day: 'numeric'

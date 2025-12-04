@@ -478,8 +478,6 @@ function TiendaHuertoHogar() {
               </div>
             </form>
           </div>
-            <Footer />
-
         </div>
       )}
       

@@ -485,17 +485,11 @@ function TiendaHuertoHogar() {
       
       {/* El resto del código del modal del carrito se omitió por brevedad */}
            {mostrarCarrito && (
-
         <div className="modal-overlay">
-
           <div className="carrito-modal">
-
             <div className="modal-header">
-
               <h2 className="modal-titulo">🛒 Mi Carrito</h2>
-
               <button onClick={() => setMostrarCarrito(false)} className="modal-cerrar-boton">✕</button>
-
             </div>
 
 
